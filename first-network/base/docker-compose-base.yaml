@@ -54,6 +54,7 @@ services:
     ports:
       - 7051:7051
       - 7053:7053
+      - 5000:5000
 
   peer1.org1.example.com:
     container_name: peer1.org1.example.com
