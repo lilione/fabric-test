@@ -45,8 +45,7 @@ export GO_TAGS="$GO_TAGS pluginsenabled"
 cd $GOPATH/src/github.com/hyperledger/fabric
 make peer
 #build fabric peer docker image
-make peer-docker
-
+make peer-docker IN_DOCKER=true
 
 #install and instantiate rockpaperscissors chaincode
 cd $GOPATH/src/github.com/njeans/fabric-test/fabric-test
