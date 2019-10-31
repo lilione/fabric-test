@@ -17,7 +17,7 @@ make peer-docker IN_DOCKER=true
 cd $GOPATH/src/github.com/njeans/fabric-test/fabric-test
 
 #copy new docker-compose file that uses named volumes instead of bind mounts
-cp /opt/docker-compose-from-docker.yaml $GOPATH/src/github.com/njeans/fabric-test/fabric-test/docker-compose-cli.yaml
+# cp /opt/docker-compose-from-docker.yaml $GOPATH/src/github.com/njeans/fabric-test/fabric-test/docker-compose-cli.yaml
 
 ./byfn.sh generate
 
@@ -28,10 +28,11 @@ cp -r $GOPATH/src/github.com/njeans/fabric-test/fabric-test/crypto-config/peerOr
 cp -r $GOPATH/src/github.com/njeans/fabric-test/fabric-test/crypto-config/peerOrganizations/org1.example.com/peers/peer1.org1.example.com/* /opt/crypto/peer1.org1.example.com/
 cp -r $GOPATH/src/github.com/njeans/fabric-test/fabric-test/crypto-config/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/* /opt/crypto/peer0.org2.example.com/
 cp -r $GOPATH/src/github.com/njeans/fabric-test/fabric-test/crypto-config/peerOrganizations/org2.example.com/peers/peer1.org2.example.com/* /opt/crypto/peer1.org2.example.com/
-cp -r $GOPATH/src/github.com/njeans/fabric-test/chaincode/rockpaperscissors/ /opt/chaincode/rockpaperscissors/
+cp -r $GOPATH/src/github.com/njeans/fabric-test/chaincode/rockpaperscissors/* /opt/chaincode/rockpaperscissors/
 cp -r $GOPATH/src/github.com/njeans/fabric-test/fabric-test/* /opt/crypto/cli/
 cp -r $GOPATH/src/github.com/njeans/fabric-test/fabric-test/crypto-config /opt/crypto/cli/crypto
 cp $GOPATH/src/github.com/hyperledger/fabric/.build/bin/peer /opt/peer-bin
 
+ls
 #install and instantiate rockpaperscissors chaincode
 ./byfn.sh up -f docker-compose-from-docker.yaml
