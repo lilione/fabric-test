@@ -21,13 +21,14 @@ cd $GOPATH/src/github.com/njeans/fabric-test/fabric-test
 
 ./byfn.sh generate
 
-#copy releavant crypto data and binaries to named volumes 
+#copy releavant crypto data and binaries to named volumes
 cp $GOPATH/src/github.com/njeans/fabric-test/fabric-test/channel-artifacts/genesis.block /opt/crypto/orderer.example.com/orderer.genesis.block
 cp -r $GOPATH/src/github.com/njeans/fabric-test/fabric-test/crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/* /opt/crypto/orderer.example.com/
 cp -r $GOPATH/src/github.com/njeans/fabric-test/fabric-test/crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/* /opt/crypto/peer0.org1.example.com/
 cp -r $GOPATH/src/github.com/njeans/fabric-test/fabric-test/crypto-config/peerOrganizations/org1.example.com/peers/peer1.org1.example.com/* /opt/crypto/peer1.org1.example.com/
 cp -r $GOPATH/src/github.com/njeans/fabric-test/fabric-test/crypto-config/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/* /opt/crypto/peer0.org2.example.com/
 cp -r $GOPATH/src/github.com/njeans/fabric-test/fabric-test/crypto-config/peerOrganizations/org2.example.com/peers/peer1.org2.example.com/* /opt/crypto/peer1.org2.example.com/
+mkdir -p /opt/chaincode/rockpaperscissors/
 cp -r $GOPATH/src/github.com/njeans/fabric-test/chaincode/rockpaperscissors/* /opt/chaincode/rockpaperscissors/
 cp -r $GOPATH/src/github.com/njeans/fabric-test/fabric-test/* /opt/crypto/cli/
 cp -r $GOPATH/src/github.com/njeans/fabric-test/fabric-test/crypto-config /opt/crypto/cli/crypto
