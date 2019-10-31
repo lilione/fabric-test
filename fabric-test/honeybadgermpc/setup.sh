@@ -1,56 +1,5 @@
 #!/bin/bash
-
-#dependencies
-apt-get update && apt-get install -y --no-install-recommends \
-    build-essential \
-    apt-transport-https \
-    ca-certificates \
-    curl \
-    gnupg2 \
-    software-properties-common
-
-#install Docker & Docker-compose
-curl -fsSL https://download.docker.com/linux/debian/gpg | apt-key add -
-add-apt-repository \
-   "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
-   $(lsb_release -cs) \
-   stable"
-apt-get update && apt-get install -y \
-    docker-ce \
-    docker-ce-cli \
-    containerd.io
-curl -L "https://github.com/docker/compose/releases/download/1.24.1/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-chmod +x /usr/local/bin/docker-compose
-
-#fabric golang dependencies
-go get github.com/syndtr/goleveldb/leveldb
-
-#download github repos
-mkdir -p $GOPATH/src/github.com/njeans/
-cd $GOPATH/src/github.com/njeans/
-git clone https://github.com/njeans/honeybadgerscc.git
-if [ $? -ne 0 ]
-then
-  cd honeybadgerscc
-  git pull 
-  cd ..
-fi
-git clone https://github.com/njeans/fabric-test.git
-if [ $? -ne 0 ]
-then
-  cd fabric-test
-  git pull 
-  cd ..
-fi
-mkdir -p $GOPATH/src/github.com/hyperledger/
-cd $GOPATH/src/github.com/hyperledger/
-git clone https://github.com/njeans/fabric.git
-if [ $? -ne 0 ]
-then
-  cd fabric
-  git pull 
-  cd ..
-fi
+set -e
 
 #build system chaincode
 cd $GOPATH/src/github.com/njeans/honeybadgerscc/
@@ -85,4 +34,4 @@ cp -r $GOPATH/src/github.com/njeans/fabric-test/fabric-test/crypto-config /opt/c
 cp $GOPATH/src/github.com/hyperledger/fabric/.build/bin/peer /opt/peer-bin
 
 #install and instantiate rockpaperscissors chaincode
-./byfn.sh up
+./byfn.sh up -f docker-compose-from-docker.yaml
