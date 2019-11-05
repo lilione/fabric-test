@@ -36,4 +36,4 @@ cp $GOPATH/src/github.com/hyperledger/fabric/.build/bin/peer /opt/peer-bin
 
 ls
 #install and instantiate rockpaperscissors chaincode
-./byfn.sh up -f docker-compose-from-docker.yaml
+./byfn.sh restart -f docker-compose-from-docker.yaml
