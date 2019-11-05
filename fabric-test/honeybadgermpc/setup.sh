@@ -17,7 +17,7 @@ make peer-docker IN_DOCKER=true
 cd $GOPATH/src/github.com/njeans/fabric-test/fabric-test
 
 #copy new docker-compose file that uses named volumes instead of bind mounts
-# cp /opt/docker-compose-from-docker.yaml $GOPATH/src/github.com/njeans/fabric-test/fabric-test/docker-compose-cli.yaml
+# cp /opt/docker-compose-from-docker.yaml $GOPATH/src/github.com/njeans/fabric-test/fabric-test/docker-compose-from-docker.yaml
 
 ./byfn.sh generate
 
@@ -32,8 +32,8 @@ mkdir -p /opt/chaincode/rockpaperscissors/
 cp -r $GOPATH/src/github.com/njeans/fabric-test/chaincode/rockpaperscissors/* /opt/chaincode/rockpaperscissors/
 cp -r $GOPATH/src/github.com/njeans/fabric-test/fabric-test/* /opt/crypto/cli/
 cp -r $GOPATH/src/github.com/njeans/fabric-test/fabric-test/crypto-config /opt/crypto/cli/crypto
+cp -r $GOPATH/src/github.com/njeans/fabric-test/fabric-test/scripts/ /opt/crypto/cli/crypto/scripts
 cp $GOPATH/src/github.com/hyperledger/fabric/.build/bin/peer /opt/peer-bin
 
-ls
 #install and instantiate rockpaperscissors chaincode
-./byfn.sh restart -f docker-compose-from-docker.yaml
+./byfn.sh restart -f docker-compose-from-docker.yaml -o kafka
