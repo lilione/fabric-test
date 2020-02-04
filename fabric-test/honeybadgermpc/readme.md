@@ -67,7 +67,7 @@ Example:
 * `openMoves <peer id> <peer org id> <game name>`
 * `endGame <peer id> <peer org id> <game name>`
 
-#Restart network
+# Restart network
 
 must be done from fabric-test/fabric-test directory
 
@@ -77,7 +77,7 @@ mkdir crypto-config
 ./byfn.sh restart -f docker-compose-from-docker.yaml -o kafka
 ```
 
-#Cleanup
+# Cleanup
 must be done from fabric-test/fabric-test directory
 
 ```
