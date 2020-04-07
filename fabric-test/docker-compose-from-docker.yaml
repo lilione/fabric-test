@@ -246,7 +246,6 @@ services:
         - /var/run/:/host/var/run/
         - chaincode:/opt/gopath/src/github.com/chaincode
         - cli-config:/opt/gopath/src/github.com/hyperledger/fabric/peer/
-        - gopath/src/github.com/hyperledger/fabric-chaincode-go:/opt/gopath/src/github.com/hyperledger/fabric-chaincode-go
     depends_on:
       - orderer.example.com
       - peer0.org1.example.com
