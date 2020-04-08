@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
+set -e
 
-#clearup docker volumes
-#docker system prune --volumes
+cd $GOPATH/src/github.com/lilione/fabric-test/fabric-test/VIN
 
 docker volume create orderer.example.com-crypto
 docker volume create peer0.org1.example.com-msp
@@ -18,7 +18,7 @@ docker volume create cli-config
 docker volume create peer-bin
 
 #build docker image for setup
-#docker build -t setup-honeybadger .
+docker build -t setup-honeybadger .
 
 #run docker container
 docker run -it \
@@ -47,5 +47,4 @@ docker run -it \
 #enter running container
 #docker exec -it setup-honeybadger bash
 
-#docker rm all containers
-#docker rm -f $(docker ps -aq)
+
