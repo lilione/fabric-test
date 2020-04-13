@@ -25,13 +25,5 @@ RUN chmod +x /usr/local/bin/docker-compose
 
 #fabric golang dependencies
 RUN go get github.com/syndtr/goleveldb/leveldb
+RUN go get github.com/kardianos/govendor
 ENV GOPATH /opt/gopath
-
-#download github repos
-RUN mkdir -p $GOPATH/src/github.com/lilione/
-WORKDIR $GOPATH/src/github.com/lilione/
-RUN git clone https://github.com/lilione/honeybadgerscc.git
-RUN git clone https://github.com/lilione/fabric-test.git
-RUN mkdir -p $GOPATH/src/github.com/hyperledger/
-WORKDIR $GOPATH/src/github.com/hyperledger/
-RUN git clone https://github.com/lilione/fabric.git

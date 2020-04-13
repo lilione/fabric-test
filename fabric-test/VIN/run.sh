@@ -12,7 +12,7 @@ docker volume create peer0.org1.example.com-tls
 docker volume create peer0.org2.example.com-tls
 docker volume create peer1.org1.example.com-tls
 docker volume create peer1.org2.example.com-tls
-docker volume create honeybadgerscc
+docker volume create scc
 docker volume create chaincode
 docker volume create cli-config
 docker volume create peer-bin
@@ -24,6 +24,8 @@ docker build -t setup-honeybadger .
 docker run -it \
 	-v /var/run/docker.sock:/var/run/docker.sock \
 	-v ${PWD}/setup.sh:/opt/setup.sh \
+  -v $GOPATH/src/github.com/lilione/fabric-test:/opt/gopath/src/github.com/lilione/fabric-test \
+  -v $GOPATH/src/github.com/lilione/fabric:/opt/gopath/src/github.com/hyperledger/fabric \
 	-v peer-bin:/opt/peer-bin \
 	-v orderer.example.com-crypto:/opt/crypto/orderer.example.com \
 	-v peer0.org1.example.com-tls:/opt/crypto/peer0.org1.example.com/tls \
@@ -34,7 +36,7 @@ docker run -it \
 	-v peer0.org2.example.com-msp:/opt/crypto/peer0.org2.example.com/msp \
 	-v peer1.org2.example.com-tls:/opt/crypto/peer1.org2.example.com/tls \
 	-v peer1.org2.example.com-msp:/opt/crypto/peer1.org2.example.com/msp \
-	-v honeybadgerscc:/opt/gopath/src/github.com/lilione/honeybadgerscc \
+	-v scc:/opt/gopath/src/github.com/lilione/fabric-test/fabric-test/VIN/scc \
 	-v chaincode:/opt/chaincode \
 	-v cli-config:/opt/crypto/cli \
 	--name setup-honeybadger \
