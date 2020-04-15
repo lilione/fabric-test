@@ -25,5 +25,4 @@ RUN chmod +x /usr/local/bin/docker-compose
 
 #fabric golang dependencies
 RUN go get github.com/syndtr/goleveldb/leveldb
-RUN go get github.com/kardianos/govendor
 ENV GOPATH /opt/gopath

@@ -10,8 +10,6 @@ volumes:
     external: true
   cli-config:
     external: true
-#  honeybadgerscc:
-  scc:
   orderer.example.com:
   orderer.example.com-crypto:
     external: true
@@ -99,8 +97,7 @@ services:
     volumes:
         - peer-bin:/usr/local/bin/
         - /var/run/:/host/var/run/
-#        - honeybadgerscc:/opt/lib/honeybadgerscc.so
-        - scc:/opt/lib/scc.so
+        - /Users/lilione/go/src/github.com/lilione/fabric-test/chaincode/myscc/:/opt/lib/
         - peer0.org1.example.com-msp:/etc/hyperledger/fabric/msp
         - peer0.org1.example.com-tls:/etc/hyperledger/fabric/tls
         - peer0.org1.example.com:/var/hyperledger/production
@@ -138,8 +135,7 @@ services:
     command: peer node start
     volumes:
         - peer-bin:/usr/local/bin/
-#        - honeybadgerscc:/opt/lib/honeybadgerscc.so
-        - scc:/opt/lib/scc.so
+        - /Users/lilione/go/src/github.com/lilione/fabric-test/chaincode/myscc/:/opt/lib/
         - /var/run/:/host/var/run/
         - peer1.org1.example.com-msp:/etc/hyperledger/fabric/msp
         - peer1.org1.example.com-tls:/etc/hyperledger/fabric/tls
@@ -175,8 +171,7 @@ services:
       - CORE_PEER_LOCALMSPID=Org2MSP
     volumes:
         - peer-bin:/usr/local/bin/
-#        - honeybadgerscc:/opt/lib/honeybadgerscc.so
-        - scc:/opt/lib/scc.so
+        - /Users/lilione/go/src/github.com/lilione/fabric-test/chaincode/myscc/:/opt/lib/
         - /var/run/:/host/var/run/
         - peer0.org2.example.com-msp:/etc/hyperledger/fabric/msp
         - peer0.org2.example.com-tls:/etc/hyperledger/fabric/tls
@@ -215,8 +210,7 @@ services:
     volumes:
         - peer-bin:/usr/local/bin/
         - /var/run/:/host/var/run/
-#        - honeybadgerscc:/opt/lib/honeybadgerscc.so
-        - scc:/opt/lib/scc.so
+        - /Users/lilione/go/src/github.com/lilione/fabric-test/chaincode/myscc/:/opt/lib/
         - peer1.org2.example.com-msp:/etc/hyperledger/fabric/msp
         - peer1.org2.example.com-tls:/etc/hyperledger/fabric/tls
         - peer1.org2.example.com:/var/hyperledger/production

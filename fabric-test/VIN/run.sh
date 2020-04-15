@@ -12,7 +12,6 @@ docker volume create peer0.org1.example.com-tls
 docker volume create peer0.org2.example.com-tls
 docker volume create peer1.org1.example.com-tls
 docker volume create peer1.org2.example.com-tls
-docker volume create scc
 docker volume create chaincode
 docker volume create cli-config
 docker volume create peer-bin
@@ -36,7 +35,6 @@ docker run -it \
 	-v peer0.org2.example.com-msp:/opt/crypto/peer0.org2.example.com/msp \
 	-v peer1.org2.example.com-tls:/opt/crypto/peer1.org2.example.com/tls \
 	-v peer1.org2.example.com-msp:/opt/crypto/peer1.org2.example.com/msp \
-	-v scc:/opt/gopath/src/github.com/lilione/fabric-test/fabric-test/VIN/scc \
 	-v chaincode:/opt/chaincode \
 	-v cli-config:/opt/crypto/cli \
 	--name setup-honeybadger \
@@ -48,5 +46,3 @@ docker run -it \
 
 #enter running container
 #docker exec -it setup-honeybadger bash
-
-

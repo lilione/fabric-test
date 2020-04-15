@@ -17,27 +17,12 @@ func (s *SmartContract) Init(stub shim.ChaincodeStubInterface) peer.Response {
 func (s *SmartContract) Invoke(stub shim.ChaincodeStubInterface) peer.Response {
 	function, args := stub.GetFunctionAndParameters()
 
-	//if function == "query" {
-	//	response := queryScc(stub, args[0])
-	//	return shim.Success(response.Payload)
-	//} else if function == "update" {
-	//	response := updateScc(stub, args[0], args[1])
-	//	return shim.Success(response.Payload)
-	//}
 	if function == "query" {
-		key := args[0]
-		value, err := stub.GetState(key)
-		if err != nil {
-			return shim.Error(fmt.Sprint("failed to get value for key %s", key))
-		}
-		return shim.Success([]byte(value))
+		response := queryMyscc(stub, args[0])
+		return shim.Success(response.Payload)
 	} else if function == "update" {
-		key, value := args[0], []byte(args[1])
-		err := stub.PutState(key, value)
-		if err != nil {
-			return shim.Error(fmt.Sprint("failed to update for key %s value %s", key, value))
-		}
-		return shim.Success(nil)
+		response := updateMyscc(stub, args[0], args[1])
+		return shim.Success(response.Payload)
 	}
 	return shim.Error("Invalid Smart Contract function name.")
 }
