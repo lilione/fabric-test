@@ -25,7 +25,6 @@ cp -r $GOPATH/src/github.com/lilione/fabric-test/fabric-test/crypto-config/peerO
 cp -r $GOPATH/src/github.com/lilione/fabric-test/fabric-test/* /opt/crypto/cli/
 cp -r $GOPATH/src/github.com/lilione/fabric-test/fabric-test/crypto-config /opt/crypto/cli/crypto
 cp -r $GOPATH/src/github.com/lilione/fabric-test/fabric-test/scripts/ /opt/crypto/cli/crypto/scripts
-cp $GOPATH/src/github.com/hyperledger/fabric/.build/bin/peer /opt/peer-bin
 mkdir -p /opt/chaincode/cc/
 cp -r $GOPATH/src/github.com/lilione/fabric-test/chaincode/cc/* /opt/chaincode/cc/
 

@@ -1,0 +1,42 @@
+# Copyright Greg Haskins All Rights Reserved
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+FROM _BASE_NS_/fabric-baseos:_BASE_TAG_
+ENV FABRIC_CFG_PATH /etc/hyperledger/fabric
+RUN mkdir -p /var/hyperledger/production $FABRIC_CFG_PATH
+COPY payload/peer /usr/local/bin
+ADD  payload/sampleconfig.tar.bz2 $FABRIC_CFG_PATH
+
+# BEGIN: Python HoneyBadgerMPC dependencies
+# Install apt dependencies
+# Put apt dependencies here that are needed by all build paths
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    curl \
+    git \
+    iproute2 \
+    libflint-dev \
+    libgmp-dev \
+    libffi-dev \
+    libmpc-dev \
+    libmpfr-dev \
+    libssl-dev \
+    openssl \
+    sudo \
+    bison \
+    cmake \
+    flex \
+    wget
+
+# Install Python3.7
+WORKDIR /
+RUN wget https://www.python.org/ftp/python/3.7.4/Python-3.7.4.tgz
+RUN tar xzf Python-3.7.4.tgz
+WORKDIR /Python-3.7.4
+RUN ./configure --enable-optimizations
+RUN make altinstall
+
+# Re-install pip3
+RUN curl "https://bootstrap.pypa.io/get-pip.py" -o "get-pip.py"
+RUN python3.7 get-pip.py --force-reinstall

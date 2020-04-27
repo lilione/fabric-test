@@ -33,8 +33,6 @@ volumes:
     external: true
   peer1.org2.example.com-tls:
     external: true
-  peer-bin:
-    external: true
 
 networks:
   byfn:
@@ -91,17 +89,16 @@ services:
       - CORE_PEER_GOSSIP_BOOTSTRAP=peer1.org1.example.com:7051
       - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.org1.example.com:7051
       - CORE_PEER_LOCALMSPID=Org1MSP
-      # - FABRIC_CFG_PATH=/etc/hyperledger/fabric
-      # - CORE_PEER_MSPCONFIGPATH=etc/hyperledger/fabric/msp
-    working_dir: /opt/gopath/src/github.com/hyperledger/fabric/peer
     volumes:
-        - peer-bin:/usr/local/bin/
-        - /var/run/:/host/var/run/
-        - /Users/lilione/go/src/github.com/lilione/fabric-test/chaincode/myscc/:/opt/lib/
-        - peer0.org1.example.com-msp:/etc/hyperledger/fabric/msp
-        - peer0.org1.example.com-tls:/etc/hyperledger/fabric/tls
-        - peer0.org1.example.com:/var/hyperledger/production
-    command: peer node start
+      - /Users/lilione/go/src/github.com/lilione/fabric/.build/bin/peer:/usr/local/bin/peer
+      - /Users/lilione/go/src/github.com/lilione/fabric-test/chaincode/myscc/:/opt/lib/
+      - /var/run/:/host/var/run/
+      - peer0.org1.example.com-msp:/etc/hyperledger/fabric/msp
+      - peer0.org1.example.com-tls:/etc/hyperledger/fabric/tls
+      - peer0.org1.example.com:/var/hyperledger/production
+      - /Users/lilione/go/src/github.com/lilione/fabric-test/fabric-test/VIN/start_peer.sh:/opt/start_peer.sh
+    working_dir: /opt
+    command: bash start_peer.sh
     ports:
       - 7051:7051
       - 7053:7053
@@ -131,15 +128,16 @@ services:
       - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer1.org1.example.com:7051
       - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.org1.example.com:7051
       - CORE_PEER_LOCALMSPID=Org1MSP
-    working_dir: /opt/gopath/src/github.com/hyperledger/fabric/peer
-    command: peer node start
     volumes:
-        - peer-bin:/usr/local/bin/
+        - /Users/lilione/go/src/github.com/lilione/fabric/.build/bin/peer:/usr/local/bin/peer
         - /Users/lilione/go/src/github.com/lilione/fabric-test/chaincode/myscc/:/opt/lib/
         - /var/run/:/host/var/run/
         - peer1.org1.example.com-msp:/etc/hyperledger/fabric/msp
         - peer1.org1.example.com-tls:/etc/hyperledger/fabric/tls
         - peer1.org1.example.com:/var/hyperledger/production
+        - /Users/lilione/go/src/github.com/lilione/fabric-test/fabric-test/VIN/start_peer.sh:/opt/start_peer.sh
+    working_dir: /opt
+    command: bash start_peer.sh
     ports:
       - 8051:7051
       - 8053:7053
@@ -170,14 +168,15 @@ services:
       - CORE_PEER_GOSSIP_BOOTSTRAP=peer1.org2.example.com:7051
       - CORE_PEER_LOCALMSPID=Org2MSP
     volumes:
-        - peer-bin:/usr/local/bin/
+        - /Users/lilione/go/src/github.com/lilione/fabric/.build/bin/peer:/usr/local/bin/peer
         - /Users/lilione/go/src/github.com/lilione/fabric-test/chaincode/myscc/:/opt/lib/
         - /var/run/:/host/var/run/
         - peer0.org2.example.com-msp:/etc/hyperledger/fabric/msp
         - peer0.org2.example.com-tls:/etc/hyperledger/fabric/tls
         - peer0.org2.example.com:/var/hyperledger/production
-    working_dir: /opt/gopath/src/github.com/hyperledger/fabric/peer
-    command: peer node start
+        - /Users/lilione/go/src/github.com/lilione/fabric-test/fabric-test/VIN/start_peer.sh:/opt/start_peer.sh
+    working_dir: /opt
+    command: bash start_peer.sh
     ports:
       - 9051:7051
       - 9053:7053
@@ -208,14 +207,15 @@ services:
       - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.org2.example.com:7051
       - CORE_PEER_LOCALMSPID=Org2MSP
     volumes:
-        - peer-bin:/usr/local/bin/
-        - /var/run/:/host/var/run/
+        - /Users/lilione/go/src/github.com/lilione/fabric/.build/bin/peer:/usr/local/bin/peer
         - /Users/lilione/go/src/github.com/lilione/fabric-test/chaincode/myscc/:/opt/lib/
+        - /var/run/:/host/var/run/
         - peer1.org2.example.com-msp:/etc/hyperledger/fabric/msp
         - peer1.org2.example.com-tls:/etc/hyperledger/fabric/tls
         - peer1.org2.example.com:/var/hyperledger/production
-    working_dir: /opt/gopath/src/github.com/hyperledger/fabric/peer
-    command: peer node start
+        - /Users/lilione/go/src/github.com/lilione/fabric-test/fabric-test/VIN/start_peer.sh:/opt/start_peer.sh
+    working_dir: /opt
+    command: bash start_peer.sh
     ports:
       - 10051:7051
       - 10053:7053

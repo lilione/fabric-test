@@ -1,0 +1,18 @@
+FROM lilione/fabric-peer:python3.7-pip3
+
+ENV FABRIC_CFG_PATH /etc/hyperledger/fabric
+
+# Allows for log messages to be immediately dumped to the
+# stream instead of being buffered.
+ENV PYTHONUNBUFFERED 1
+
+# Path variables needed for Charm
+ENV LIBRARY_PATH /usr/local/lib
+ENV LD_LIBRARY_PATH /usr/local/lib
+ENV LIBRARY_INCLUDE_PATH /usr/local/include
+
+# Setup virtualenv
+ENV PYTHON_LIBRARY_PATH /opt/venv
+ENV PATH ${PYTHON_LIBRARY_PATH}/bin:${PATH}
+RUN pip3 install virtualenv
+RUN python3.7 -m virtualenv ${PYTHON_LIBRARY_PATH}

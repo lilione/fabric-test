@@ -14,7 +14,6 @@ docker volume create peer1.org1.example.com-tls
 docker volume create peer1.org2.example.com-tls
 docker volume create chaincode
 docker volume create cli-config
-docker volume create peer-bin
 
 #build docker image for setup
 docker build -t setup-honeybadger .
@@ -25,7 +24,6 @@ docker run -it \
 	-v ${PWD}/setup.sh:/opt/setup.sh \
   -v $GOPATH/src/github.com/lilione/fabric-test:/opt/gopath/src/github.com/lilione/fabric-test \
   -v $GOPATH/src/github.com/lilione/fabric:/opt/gopath/src/github.com/hyperledger/fabric \
-	-v peer-bin:/opt/peer-bin \
 	-v orderer.example.com-crypto:/opt/crypto/orderer.example.com \
 	-v peer0.org1.example.com-tls:/opt/crypto/peer0.org1.example.com/tls \
 	-v peer0.org1.example.com-msp:/opt/crypto/peer0.org1.example.com/msp \
