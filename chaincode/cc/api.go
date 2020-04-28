@@ -15,12 +15,17 @@ func toChaincodeArgs(args ...string) [][]byte {
 	return bargs
 }
 
-func queryMyscc(stub shim.ChaincodeStubInterface, key string) peer.Response {
-	chainCodeArgs := toChaincodeArgs("query", key)
-	return stub.InvokeChaincode("myscc", chainCodeArgs, channelName)
-}
+//func queryMyscc(stub shim.ChaincodeStubInterface, key string) peer.Response {
+//	chainCodeArgs := toChaincodeArgs("query", key)
+//	return stub.InvokeChaincode("myscc", chainCodeArgs, channelName)
+//}
+//
+//func updateMyscc(stub shim.ChaincodeStubInterface, key string, value string) peer.Response {
+//	chainCodeArgs := toChaincodeArgs("update", key, value)
+//	return stub.InvokeChaincode("myscc", chainCodeArgs, channelName)
+//}
 
-func updateMyscc(stub shim.ChaincodeStubInterface, key string, value string) peer.Response {
-	chainCodeArgs := toChaincodeArgs("update", key, value)
+func getInputmaskIdx(stub shim.ChaincodeStubInterface) peer.Response {
+	chainCodeArgs := toChaincodeArgs("getInputmaskIdx")
 	return stub.InvokeChaincode("myscc", chainCodeArgs, channelName)
 }

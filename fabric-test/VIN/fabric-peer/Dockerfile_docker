@@ -1,0 +1,54 @@
+FROM lilione/fabric-peer:venv
+
+# python dependencies
+RUN pip3 install \
+    cffi \
+    Cython \
+    gmpy2 \
+    psutil \
+    pycrypto \
+    pyzmq \
+    zfec \
+    toml \
+    pyyaml \
+    aiohttp
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    vim \
+    apt-transport-https
+
+# This is needed otherwise the build for the power sum solver will fail.
+# This is a known issue in the version of libflint-dev in apt.
+# https://github.com/wbhart/flint2/issues/217
+# This has been fixed if we pull the latest code from the repo. However, we want
+# to avoid compiling the lib from the source since it adds 20 minutes to the build.
+RUN sed -i '30c #include "flint/flint.h"' /usr/include/flint/flintxx/flint_classes.h
+WORKDIR /
+RUN curl https://sh.rustup.rs -sSf | sh -s -- -y --default-toolchain nightly
+ENV PATH "/root/.cargo/bin:${PATH}"
+
+# NTL
+COPY --from=initc3/ntl:11.4.1-buster $LIBRARY_INCLUDE_PATH/NTL $LIBRARY_INCLUDE_PATH/NTL
+COPY --from=initc3/ntl:11.4.1-buster $LIBRARY_PATH/libntl.a $LIBRARY_PATH/libntl.a
+
+# update gcc
+RUN apt-get update && \
+    apt-get install build-essential software-properties-common -y && \
+    add-apt-repository ppa:ubuntu-toolchain-r/test -y && \
+    apt-get update && \
+    apt-get install gcc-6 g++-6 -y && \
+    update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-6 60 --slave /usr/bin/g++ g++ /usr/bin/g++-6 && \
+    gcc -v
+
+#install Docker & Docker-compose
+RUN curl -fsSL https://download.docker.com/linux/debian/gpg | apt-key add -
+RUN add-apt-repository \
+   "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
+   $(lsb_release -cs) \
+   stable"
+RUN apt-get update && apt-get install -y \
+    docker-ce \
+    docker-ce-cli \
+    containerd.io
+RUN curl -L "https://github.com/docker/compose/releases/download/1.24.1/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+RUN chmod +x /usr/local/bin/docker-compose

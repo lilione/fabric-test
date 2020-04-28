@@ -2,15 +2,15 @@
 set -e
 
 #build system chaincode
-cd $GOPATH/src/github.com/lilione/fabric-test/chaincode/myscc
-go build -buildmode=plugin
+#cd $GOPATH/src/github.com/lilione/fabric-test/chaincode/myscc
+#go build -buildmode=plugin
 
 #build fabric peer binary
-cd $GOPATH/src/github.com/hyperledger/fabric
-GO_TAGS+=" pluginsenabled" make peer
+#cd $GOPATH/src/github.com/hyperledger/fabric
+#GO_TAGS+=" pluginsenabled" make peer
 
 #build fabric peer docker image
-DOCKER_DYNAMIC_LINK=true GO_TAGS+=" pluginsenabled" make peer-docker IN_DOCKER=true
+#DOCKER_DYNAMIC_LINK=true GO_TAGS+=" pluginsenabled" make peer-docker IN_DOCKER=true
 
 cd $GOPATH/src/github.com/lilione/fabric-test/fabric-test
 ./byfn.sh generate
@@ -22,21 +22,34 @@ cp -r $GOPATH/src/github.com/lilione/fabric-test/fabric-test/crypto-config/peerO
 cp -r $GOPATH/src/github.com/lilione/fabric-test/fabric-test/crypto-config/peerOrganizations/org1.example.com/peers/peer1.org1.example.com/* /opt/crypto/peer1.org1.example.com/
 cp -r $GOPATH/src/github.com/lilione/fabric-test/fabric-test/crypto-config/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/* /opt/crypto/peer0.org2.example.com/
 cp -r $GOPATH/src/github.com/lilione/fabric-test/fabric-test/crypto-config/peerOrganizations/org2.example.com/peers/peer1.org2.example.com/* /opt/crypto/peer1.org2.example.com/
-cp -r $GOPATH/src/github.com/lilione/fabric-test/fabric-test/* /opt/crypto/cli/
-cp -r $GOPATH/src/github.com/lilione/fabric-test/fabric-test/crypto-config /opt/crypto/cli/crypto
-cp -r $GOPATH/src/github.com/lilione/fabric-test/fabric-test/scripts/ /opt/crypto/cli/crypto/scripts
-mkdir -p /opt/chaincode/cc/
-cp -r $GOPATH/src/github.com/lilione/fabric-test/chaincode/cc/* /opt/chaincode/cc/
 
 #install and instantiate application chaincode
 cd $GOPATH/src/github.com/lilione/fabric-test/fabric-test
 ./byfn.sh restart -f docker-compose-from-docker.yaml -o kafka
 
+cd $GOPATH/src/github.com/lilione/HoneyBadgerMPC
+bash apps/fabric/scripts/start_server.sh
 
-#docker exec -it cli bash
-#export CHANNEL_NAME=mychannel
-#bash scripts/run_cmd.sh update 0 1 "1" "2"
-#bash scripts/run_cmd.sh query 0 1 "1"
+# docker exec -it cli bash
+# export CHANNEL_NAME=mychannel
+# bash scripts/run_cmd.sh update 0 1 "1" "2"
+# bash scripts/run_cmd.sh query 0 1 "1"
+# bash scripts/run_cmd.sh getInputmaskIdx 0 1
 
-#docker exec -it peer0.org1.example.com bash
+# docker exec -it peer0.org1.example.com bash
 
+docker run -d \
+ -v /Users/lilione/go/src/github.com/lilione/HoneyBadgerMPC:/usr/src/HoneyBadgerMPC \
+ -v /Users/lilione/go/src/github.com/lilione/fabric-test/fabric-test/log:/usr/src/HoneyBadgerMPC/apps/fabric/chaincode-log \
+ -v /var/run/docker.sock:/var/run/docker.sock \
+ --name client -it hyperledger/fabric-peer:latest
+docker network connect net_byfn client
+docker exec -it client bash
+
+# python3.7 apps/fabric/get_inputmask.py
+
+#docker run \
+# -v /Users/lilione/go/src/github.com/lilione/HoneyBadgerMPC:/usr/src/HoneyBadgerMPC \
+# -v /Users/lilione/go/src/github.com/lilione/fabric-test/fabric-test/log:/usr/src/HoneyBadgerMPC/apps/fabric/chaincode-log \
+# -v /var/run/docker.sock:/var/run/docker.sock \
+# --name client -it hyperledger/fabric-peer:latest

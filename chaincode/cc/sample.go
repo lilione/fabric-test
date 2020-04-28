@@ -15,15 +15,21 @@ func (s *SmartContract) Init(stub shim.ChaincodeStubInterface) peer.Response {
 }
 
 func (s *SmartContract) Invoke(stub shim.ChaincodeStubInterface) peer.Response {
-	function, args := stub.GetFunctionAndParameters()
+	//fn, args := stub.GetFunctionAndParameters()
+	fn, _ := stub.GetFunctionAndParameters()
 
-	if function == "query" {
-		response := queryMyscc(stub, args[0])
-		return shim.Success(response.Payload)
-	} else if function == "update" {
-		response := updateMyscc(stub, args[0], args[1])
+	if fn == "getInputmaskIdx" {
+		response := getInputmaskIdx(stub)
 		return shim.Success(response.Payload)
 	}
+	//else if fn == "query" {
+	//	response := queryMyscc(stub, args[0])
+	//	return shim.Success(response.Payload)
+	//} else if fn == "update" {
+	//	response := updateMyscc(stub, args[0], args[1])
+	//	return shim.Success(response.Payload)
+	//}
+
 	return shim.Error("Invalid Smart Contract function name.")
 }
 
