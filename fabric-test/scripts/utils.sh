@@ -8,8 +8,9 @@
 
 ORDERER_CA=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem
 PEER0_ORG1_CA=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt
+PEER1_ORG1_CA=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto-config/peerOrganizations/org1.example.com/peers/peer1.org1.example.com/tls/ca.crt
 PEER0_ORG2_CA=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto-config/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/tls/ca.crt
-PEER0_ORG3_CA=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto-config/peerOrganizations/org3.example.com/peers/peer0.org3.example.com/tls/ca.crt
+PEER1_ORG2_CA=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto-config/peerOrganizations/org2.example.com/peers/peer1.org2.example.com/tls/ca.crt
 
 CC_NAME=mycc
 # verify the result of the end-to-end test
@@ -296,6 +297,9 @@ parsePeerConnectionParameters() {
     PEER="peer$1.org$2"
     PEERS="$PEERS $PEER"
     PEER_CONN_PARMS="$PEER_CONN_PARMS --peerAddresses $PEER.example.com:7051"
+    echo ${CORE_PEER_TLS_ENABLED}
+    echo ${PWD}
+    echo eval echo "--tlsRootCertFiles \$PEER$1_ORG$2_CA"
     if [ -z "$CORE_PEER_TLS_ENABLED" -o "$CORE_PEER_TLS_ENABLED" = "true" ]; then
       TLSINFO=$(eval echo "--tlsRootCertFiles \$PEER$1_ORG$2_CA")
       PEER_CONN_PARMS="$PEER_CONN_PARMS $TLSINFO"
@@ -317,37 +321,38 @@ invoke() {
   # while 'peer chaincode' command can get the orderer endpoint from the
   # peer (if join was successful), let's supply it directly as we know
   # it using the "-o" option
+  echo ${CORE_PEER_TLS_ENABLED}
   if [ -z "$CORE_PEER_TLS_ENABLED" -o "$CORE_PEER_TLS_ENABLED" = "false" ]; then
     set -x
-    peer chaincode invoke -o orderer.example.com:7050 -C $CHANNEL_NAME -n $CC_NAME $PEER_CONN_PARMS -c $3 >& log/log.txt
+    peer chaincode invoke -o orderer.example.com:7050 -C $CHANNEL_NAME -n $CC_NAME $PEER_CONN_PARMS -c $3 >& log/chaincode/$4_peer$1org$2.txt
     res=$?
     set +x
   else
     set -x
-    peer chaincode invoke -o orderer.example.com:7050 --tls $CORE_PEER_TLS_ENABLED --cafile $ORDERER_CA -C $CHANNEL_NAME -n $CC_NAME $PEER_CONN_PARMS -c $3 >& log/log.txt
+    peer chaincode invoke -o orderer.example.com:7050 --tls $CORE_PEER_TLS_ENABLED --cafile $ORDERER_CA -C $CHANNEL_NAME -n $CC_NAME $PEER_CONN_PARMS -c $3 >& log/chaincode/$4_peer$1org$2.txt
     res=$?
     set +x
   fi
-  cat log.txt
+  cat log/chaincode/$4_peer$1org$2.txt
   verifyResult $res "Invoke execution on $PEERS failed "
   echo "===================== Invoke transaction successful on $PEERS on channel '$CHANNEL_NAME' ===================== "
   echo
 }
 
-query() {
-  echo "query"
-  arg="{\"Args\":[\"query\",\"$3\"]}"
-  invoke $1 $2 $arg
-}
-
-update() {
-  echo "update"
-  arg="{\"Args\":[\"update\",\"$3\",\"$4\"]}"
-  invoke $1 $2 $arg
-}
-
 getInputmaskIdx() {
   echo "getInputmaskIdx"
   arg="{\"Args\":[\"getInputmaskIdx\"]}"
-  invoke $1 $2 $arg
+  invoke $1 $2 $arg "getInputmaskIdx"
+}
+
+sendMaskedInput() {
+  echo "sendMaskedInput"
+  arg="{\"Args\":[\"sendMaskedInput\",\"$3\",\"$4\"]}"
+  invoke $1 $2 $arg "sendMaskedInput"
+}
+
+reconstruct() {
+  echo "reconstruct"
+  arg="{\"Args\":[\"reconstruct\",\"$3\"]}"
+  invoke $1 $2 $arg "reconstruct"
 }

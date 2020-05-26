@@ -242,7 +242,7 @@ services:
       - CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto-config/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp
     volumes:
         - /var/run/:/host/var/run/
-        - /Users/lilione/go/src/github.com/lilione/fabric-test/chaincode/cc:/opt/gopath/src/github.com/chaincode/cc
+        - /Users/lilione/go/src/github.com/lilione/fabric-test/chaincode/mycc:/opt/gopath/src/github.com/chaincode/mycc
         - /Users/lilione/go/src/github.com/lilione/fabric-test/fabric-test:/opt/gopath/src/github.com/hyperledger/fabric/peer
     working_dir: /opt/gopath/src/github.com/hyperledger/fabric/peer
     depends_on:

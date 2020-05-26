@@ -13,10 +13,10 @@ docker volume create peer0.org2.example.com-tls
 docker volume create peer1.org1.example.com-tls
 docker volume create peer1.org2.example.com-tls
 
-#build docker image for setup
+# build docker image for setup
 #docker build -t setup-honeybadger .
 
-#run docker container
+# run docker container
 docker run -it \
 	-v /var/run/docker.sock:/var/run/docker.sock \
 	-v ${PWD}/setup.sh:/opt/setup.sh \
@@ -36,8 +36,8 @@ docker run -it \
 	-w /opt setup-honeybadger \
 	bash
 
-#enter stopped container
+# enter stopped container
 #docker restart setup-honeybadger
 
-#enter running container
+# enter running container
 #docker exec -it setup-honeybadger bash

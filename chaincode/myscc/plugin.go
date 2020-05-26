@@ -26,8 +26,7 @@ func (s *scc) Init(stub shim.ChaincodeStubInterface) pb.Response {
 
 // Invoke implements the chaincode shim interface
 func (s *scc) Invoke(stub shim.ChaincodeStubInterface) pb.Response {
-	//fn, args := stub.GetFunctionAndParameters()
-	fn, _ := stub.GetFunctionAndParameters()
+	fn, args := stub.GetFunctionAndParameters()
 
 	if fn == "getInputmaskIdx" {
 		key := "inputmask"
@@ -36,30 +35,22 @@ func (s *scc) Invoke(stub shim.ChaincodeStubInterface) pb.Response {
 			_value = []byte("0")
 		}
 		value, _ := strconv.Atoi(string(_value))
+
 		stub.PutState(key, []byte(strconv.Itoa(value + 1)))
+
 		return shim.Success([]byte(strconv.Itoa(value)))
+	} else if fn == "sendMaskedInput" {
+		idx := args[0]
+		maskedInput := args[1]
+
+		storeInput(idx, maskedInput)
+		return shim.Success([]byte("success"))
+	} else if fn == "reconstruct" {
+		idx := args[0]
+
+		result := reconstruct(idx)
+		return shim.Success([]byte(result))
 	}
-	//else if fn == "query" {
-	//	if len(args) != 1 {
-	//		return shim.Error("invalid number of args for query function")
-	//	}
-	//	key := args[0]
-	//	value, err := stub.GetState(key)
-	//	if err != nil {
-	//		return shim.Error(fmt.Sprint("failed to get value for key %s", key))
-	//	}
-	//	return shim.Success([]byte(value))
-	//} else if fn == "update" {
-	//	if len(args) != 2 {
-	//		return shim.Error("invalid number of args for update function")
-	//	}
-	//	key, value := args[0], []byte(args[1])
-	//	err := stub.PutState(key, value)
-	//	if err != nil {
-	//		return shim.Error(fmt.Sprint("failed to update for key %s value %s", key, value))
-	//	}
-	//	return shim.Success([]byte("key-value updated"))
-	//}
 	return shim.Error("invalid function name.")
 }
 
