@@ -26,7 +26,6 @@ cp -r $GOPATH/src/github.com/lilione/fabric-test/fabric-test/crypto-config/peerO
 cp -r $GOPATH/src/github.com/lilione/fabric-test/fabric-test/crypto-config/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/* /opt/crypto/peer0.org2.example.com/
 cp -r $GOPATH/src/github.com/lilione/fabric-test/fabric-test/crypto-config/peerOrganizations/org2.example.com/peers/peer1.org2.example.com/* /opt/crypto/peer1.org2.example.com/
 
-
 # install and instantiate application chaincode
 cd $GOPATH/src/github.com/lilione/fabric-test/fabric-test
 ./byfn.sh restart -f docker-compose-from-docker.yaml -o kafka
@@ -35,6 +34,16 @@ cd $GOPATH/src/github.com/lilione/fabric-test/fabric-test
 echo "starting mpc servers"
 cd $GOPATH/src/github.com/lilione/HoneyBadgerMPC
 bash apps/fabric/scripts/start_server.sh
+
+# start client
+echo "staring client"
+docker run -d \
+ -v /Users/lilione/go/src/github.com/lilione/HoneyBadgerMPC:/usr/src/HoneyBadgerMPC \
+ -v /Users/lilione/go/src/github.com/lilione/fabric-test/fabric-test/log/chaincode:/usr/src/HoneyBadgerMPC/apps/fabric/log/chaincode \
+ -v /var/run/docker.sock:/var/run/docker.sock \
+ --name client -it hyperledger/fabric-peer:latest
+docker network connect net_byfn client
+docker exec -it client bash
 
 # docker exec -it cli bash
 # export CHANNEL_NAME=mychannel
@@ -49,20 +58,10 @@ bash apps/fabric/scripts/start_server.sh
 # docker exec -it peer0.org2.example.com bash
 # docker exec -it peer1.org2.example.com bash
 
-# start client
-echo "staring client"
-docker run -d \
- -v /Users/lilione/go/src/github.com/lilione/HoneyBadgerMPC:/usr/src/HoneyBadgerMPC \
- -v /Users/lilione/go/src/github.com/lilione/fabric-test/fabric-test/log/chaincode:/usr/src/HoneyBadgerMPC/apps/fabric/log/chaincode \
- -v /var/run/docker.sock:/var/run/docker.sock \
- --name client -it hyperledger/fabric-peer:latest
-docker network connect net_byfn client
-docker exec -it client bash
-
 # python3.7 apps/fabric/src/client/start_client.py
 
 #docker run \
 # -v /Users/lilione/go/src/github.com/lilione/HoneyBadgerMPC:/usr/src/HoneyBadgerMPC \
 # -v /Users/lilione/go/src/github.com/lilione/fabric-test/fabric-test/log/chaincode:/usr/src/HoneyBadgerMPC/apps/fabric/log/chaincode \
 # -v /var/run/docker.sock:/var/run/docker.sock \
-# --name client -it hyperledger/fabric-peer:latest
+# -it hyperledger/fabric-peer:latest

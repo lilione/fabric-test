@@ -15,17 +15,22 @@ func toChaincodeArgs(args ...string) [][]byte {
 	return bargs
 }
 
-func getInputmaskIdx(stub shim.ChaincodeStubInterface) peer.Response {
-	chainCodeArgs := toChaincodeArgs("getInputmaskIdx")
+func getInputmaskIdx(stub shim.ChaincodeStubInterface, num string) peer.Response {
+	chainCodeArgs := toChaincodeArgs("getInputmaskIdx", num)
 	return stub.InvokeChaincode("myscc", chainCodeArgs, channelName)
 }
 
-func sendMaskedInput(stub shim.ChaincodeStubInterface, idx string, maskedInput string) peer.Response {
-	chainCodeArgs := toChaincodeArgs("sendMaskedInput", idx, maskedInput)
+func registerItem(stub shim.ChaincodeStubInterface, idxRegistrant string, maskedRegistrant string, idxAmt string, maskedAmt string) peer.Response {
+	chainCodeArgs := toChaincodeArgs("registerItem", idxRegistrant, maskedRegistrant, idxAmt, maskedAmt)
 	return stub.InvokeChaincode("myscc", chainCodeArgs, channelName)
 }
 
-func reconstruct(stub shim.ChaincodeStubInterface, idx string) peer.Response {
-	chainCodeArgs := toChaincodeArgs("reconstruct", idx)
+func handOffItemToNextProvider(stub shim.ChaincodeStubInterface, idxInputProvider string, maskedInputProvider string, idxOutputProvider string, maskedOutputProvider string, idxAmt string, maskedAmt string, itemID string, prevSeq string) peer.Response {
+	chainCodeArgs := toChaincodeArgs("handOffItemToNextProvider", idxInputProvider, maskedInputProvider, idxOutputProvider, maskedOutputProvider, idxAmt, maskedAmt, itemID, prevSeq)
+	return stub.InvokeChaincode("myscc", chainCodeArgs, channelName)
+}
+
+func sourceItem(stub shim.ChaincodeStubInterface, itemID string, seq string) peer.Response {
+	chainCodeArgs := toChaincodeArgs("sourceItem", itemID, seq)
 	return stub.InvokeChaincode("myscc", chainCodeArgs, channelName)
 }

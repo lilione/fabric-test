@@ -341,18 +341,24 @@ invoke() {
 
 getInputmaskIdx() {
   echo "getInputmaskIdx"
-  arg="{\"Args\":[\"getInputmaskIdx\"]}"
+  arg="{\"Args\":[\"getInputmaskIdx\",\"$3\"]}"
   invoke $1 $2 $arg "getInputmaskIdx"
 }
 
-sendMaskedInput() {
-  echo "sendMaskedInput"
-  arg="{\"Args\":[\"sendMaskedInput\",\"$3\",\"$4\"]}"
-  invoke $1 $2 $arg "sendMaskedInput"
+registerItem() {
+  echo "registerItem"
+  arg="{\"Args\":[\"registerItem\",\"$3\",\"$4\",\"$5\",\"$6\"]}"
+  invoke $1 $2 $arg "registerItem"
 }
 
-reconstruct() {
-  echo "reconstruct"
-  arg="{\"Args\":[\"reconstruct\",\"$3\"]}"
-  invoke $1 $2 $arg "reconstruct"
+handOffItemToNextProvider() {
+  echo "handOffItemToNextProvider"
+  arg="{\"Args\":[\"handOffItemToNextProvider\",\"$3\",\"$4\",\"$5\",\"$6\",\"$7\",\"$8\",\"$9\",\"${10}\"]}"
+  invoke $1 $2 $arg "handOffItemToNextProvider"
+}
+
+sourceItem() {
+  echo "sourceItem"
+  arg="{\"Args\":[\"sourceItem\",\"$3\",\"$4\"]}"
+    invoke $1 $2 $arg "sourceItem"
 }
