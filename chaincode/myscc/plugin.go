@@ -9,14 +9,9 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-
+	"strconv"
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 	"github.com/hyperledger/fabric/protos/peer"
-	//"github.com/hyperledger/fabric-chaincode-go/shim"
-	//"github.com/hyperledger/fabric-protos-go/peer"
-
-	"strconv"
-	"time"
 )
 
 // New returns an implementation of the chaincode interface
@@ -28,12 +23,12 @@ type scc struct {
 }
 
 type shipment struct {
-	InputProvider 	string		`json:"inputProvider"`
-	OutputProvider 	string 		`json:"outputProvider"`
-	Amount 			string 		`json:"amount"`
-	Timestamp		int 		`json:"timestamp"`
-	Prev			string		`json:"prev"`
-	Succ			[]string	`json:"succ"`
+	IdxLoadTime 	string
+	IdxUnloadTime 	string
+}
+
+type truck struct {
+	ShipmentList	[]shipment
 }
 
 // Init implements the chaincode shim interface
@@ -51,16 +46,30 @@ func getCounter(stub shim.ChaincodeStubInterface, key string, inc int) string {
 	return string(cnt)
 }
 
-func getShipment(stub shim.ChaincodeStubInterface, key string) shipment {
-	shipmentJSON, _ := stub.GetState(key)
-	var shipmentInstance shipment
-	json.Unmarshal(shipmentJSON, &shipmentInstance)
-	return shipmentInstance
+func getTruck(stub shim.ChaincodeStubInterface, key string) truck {
+	truckJSON, _ := stub.GetState(key)
+	var truckInstance truck
+	json.Unmarshal(truckJSON, &truckInstance)
+	return truckInstance
 }
 
-func putShipment(stub shim.ChaincodeStubInterface, key string, shipmentInstance shipment) {
-	shipmentJSON, _ := json.Marshal(shipmentInstance)
-	stub.PutState(key, shipmentJSON)
+func putTruck(stub shim.ChaincodeStubInterface, key string, truckInstance truck) {
+	truckJSON, _ := json.Marshal(&truckInstance)
+	stub.PutState(key, truckJSON)
+}
+
+func inRange(x string, l string, r string) bool {
+	fmt.Println("inRange")
+	if cmp(x, l) {
+		fmt.Println("cmp(x, l)")
+		return false
+	}
+	if cmp(r, x) {
+		fmt.Println("cmp(r, x)")
+		return false
+	}
+	fmt.Println("pass")
+	return true
 }
 
 // Invoke implements the chaincode shim interface
@@ -83,91 +92,80 @@ func (s *scc) Invoke(stub shim.ChaincodeStubInterface) peer.Response {
 
 		return shim.Success([]byte(inputmaskIdx))
 
-	} else if fn == "registerItem" {
-		idxRegistrant := args[0]
-		maskedRegistrant := args[1]
-		idxAmt := args[2]
-		maskedAmt := args[3]
+	} else if fn == "createTruck" {
 
-		itemID := getCounter(stub,"itemID", 1)
-		seq := getCounter(stub, ("itemShipmentCnt" + itemID), 1)
+		truckID := getCounter(stub, "truckID", 1)
 
-		dbPut(idxRegistrant, calcShare(idxRegistrant, maskedRegistrant))
-		dbPut(idxAmt, calcShare(idxAmt, maskedAmt))
+		var truckInstance truck
+		putTruck(stub, ("truckRegistry" + truckID), truckInstance)
 
-		var shipmentInstance shipment
-		shipmentInstance.InputProvider = ""
-		shipmentInstance.OutputProvider = idxRegistrant
-		shipmentInstance.Amount = idxAmt
-		shipmentInstance.Timestamp = int(time.Now().Unix())
-		putShipment(stub, ("itemInfo" + itemID + seq), shipmentInstance)
+		return shim.Success([]byte(truckID))
 
-		return shim.Success([]byte(itemID + " " + seq))
+	} else if fn == "recordShipment" {
 
-	} else if fn == "handOffItemToNextProvider" {
-		idxInputProvider := args[0]
-		maskedInputProvider := args[1]
-		idxOutputProvider := args[2]
-		maskedOutputProvider := args[3]
-		idxAmt := args[4]
-		maskedAmt := args[5]
-		itemID := args[6]
-		prevSeq := args[7]
+		truckID := args[0]
+		idxLoadTime := args[1]
+		maskedLoadTime := args[2]
+		idxUnloadTime := args[3]
+		maskedUnloadTime := args[4]
 
-		prevShipmentInstance := getShipment(stub, ("itemInfo" + itemID + prevSeq))
+		shareLoadTime := calcShare(idxLoadTime, maskedLoadTime)
+		shareUnloadTime := calcShare(idxUnloadTime, maskedUnloadTime)
 
-		inputProvider := calcShare(idxInputProvider, maskedInputProvider)
-		if !eq(inputProvider, dbGet(prevShipmentInstance.OutputProvider)) {
-			return shim.Error("Invalid input provider")
-		}
-		amt := calcShare(idxAmt, maskedAmt)
-		prevAmt := dbGet(prevShipmentInstance.Amount)
-		if cmp(prevAmt, amt) {
-			return shim.Error("Invalid amount")
-		}
+		dbPut(idxLoadTime, shareLoadTime)
+		dbPut(idxUnloadTime, shareUnloadTime)
 
-		_prevAmt, _ := strconv.Atoi(prevAmt)
-		_amt, _ := strconv.Atoi(amt)
-		dbPut(prevShipmentInstance.Amount, strconv.Itoa(_prevAmt - _amt))
-		seq := getCounter(stub, ("itemShipmentCnt" + itemID), 1)
-		prevShipmentInstance.Succ = append(prevShipmentInstance.Succ, seq)
-		putShipment(stub, ("itemInfo" + itemID + prevSeq), prevShipmentInstance)
-
-		dbPut(idxInputProvider, inputProvider)
-		outputProvider := calcShare(idxOutputProvider, maskedOutputProvider)
-		dbPut(idxOutputProvider, outputProvider)
-		dbPut(idxAmt, amt)
-
-		var shipmentInstance shipment
-		shipmentInstance.InputProvider = idxInputProvider
-		shipmentInstance.OutputProvider = idxOutputProvider
-		shipmentInstance.Amount = idxAmt
-		shipmentInstance.Timestamp = int(time.Now().Unix())
-		shipmentInstance.Prev = prevSeq
-		putShipment(stub, ("itemInfo" + itemID + seq), shipmentInstance)
-
-		return shim.Success([]byte(seq))
-
-	} else if fn == "sourceItem" {
-		itemID := args[0]
-		seq := args[1]
-
-		var providers string
-		for true {
-			shipmentInstance := getShipment(stub, ("itemInfo" + itemID + seq))
-			providers += reconstruct(dbGet(shipmentInstance.OutputProvider))
-			seq = shipmentInstance.Prev
-			if seq == "" {
-				break
-			} else {
-				providers += " "
+		if !cmp(shareUnloadTime, shareLoadTime) {
+			shipmentInstance := shipment{
+				IdxLoadTime: idxLoadTime,
+				IdxUnloadTime: idxUnloadTime,
 			}
+
+			truckInstance := getTruck(stub, ("truckRegistry" + truckID))
+			truckInstance.ShipmentList = append(truckInstance.ShipmentList, shipmentInstance)
+			putTruck(stub, ("truckRegistry" + truckID), truckInstance)
+
+			return shim.Success([]byte("recorded successfully"))
 		}
-		return shim.Success([]byte(providers))
+
+		return shim.Error("invalid load and unlaod time")
+
+	} else if fn == "queryPositions" {
+		truckID := args[0]
+		idxInitTime := args[1]
+		maskedInitTime := args[2]
+		idxEndTime := args[3]
+		maskedEndTime := args[4]
+
+		shareInitTime := calcShare(idxInitTime, maskedInitTime)
+		shareEndTime := calcShare(idxEndTime, maskedEndTime)
+
+		var positions string
+		truckInstance := getTruck(stub, ("truckRegistry" + truckID))
+		fmt.Println("len", len(truckInstance.ShipmentList))
+		for index, shipmentInstance := range truckInstance.ShipmentList {
+			fmt.Println("index", index)
+			shareLoadTime := dbGet(shipmentInstance.IdxLoadTime)
+			shareUnloadTime := dbGet(shipmentInstance.IdxUnloadTime)
+
+			if inRange(shareLoadTime, shareInitTime, shareEndTime) || inRange(shareUnloadTime, shareInitTime, shareEndTime) || inRange(shareInitTime, shareLoadTime, shareUnloadTime) {
+				fmt.Println("in")
+				if positions != "" {
+					fmt.Println("add blank")
+					positions += " "
+				}
+				positions += strconv.Itoa(index)
+			}
+			fmt.Println("positions", positions)
+		}
+		fmt.Println("finished")
+		fmt.Println([]byte(positions))
+		return shim.Success([]byte(positions))
 
 	}
 
 	return shim.Error("invalid function name.")
 }
 
-func main() {}
+func main() {
+}

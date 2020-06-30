@@ -360,5 +360,23 @@ handOffItemToNextProvider() {
 sourceItem() {
   echo "sourceItem"
   arg="{\"Args\":[\"sourceItem\",\"$3\",\"$4\"]}"
-    invoke $1 $2 $arg "sourceItem"
+  invoke $1 $2 $arg "sourceItem"
+}
+
+createTruck() {
+  echo "createTruck"
+  arg="{\"Args\":[\"createTruck\"]}"
+  invoke $1 $2 $arg "createTruck"
+}
+
+recordShipment() {
+  echo "recordShipment"
+  arg="{\"Args\":[\"recordShipment\",\"$3\",\"$4\",\"$5\",\"$6\",\"$7\"]}"
+  invoke $1 $2 $arg "recordShipment"
+}
+
+queryPositions() {
+  echo "queryPositions"
+  arg="{\"Args\":[\"queryPositions\",\"$3\",\"$4\",\"$5\",\"$6\",\"$7\"]}"
+  invoke $1 $2 $arg "queryPositions"
 }

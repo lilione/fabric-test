@@ -20,17 +20,17 @@ func getInputmaskIdx(stub shim.ChaincodeStubInterface, num string) peer.Response
 	return stub.InvokeChaincode("myscc", chainCodeArgs, channelName)
 }
 
-func registerItem(stub shim.ChaincodeStubInterface, idxRegistrant string, maskedRegistrant string, idxAmt string, maskedAmt string) peer.Response {
-	chainCodeArgs := toChaincodeArgs("registerItem", idxRegistrant, maskedRegistrant, idxAmt, maskedAmt)
+func createTruck(stub shim.ChaincodeStubInterface) peer.Response {
+	chainCodeArgs := toChaincodeArgs("createTruck")
 	return stub.InvokeChaincode("myscc", chainCodeArgs, channelName)
 }
 
-func handOffItemToNextProvider(stub shim.ChaincodeStubInterface, idxInputProvider string, maskedInputProvider string, idxOutputProvider string, maskedOutputProvider string, idxAmt string, maskedAmt string, itemID string, prevSeq string) peer.Response {
-	chainCodeArgs := toChaincodeArgs("handOffItemToNextProvider", idxInputProvider, maskedInputProvider, idxOutputProvider, maskedOutputProvider, idxAmt, maskedAmt, itemID, prevSeq)
+func recordShipment(stub shim.ChaincodeStubInterface, truckID string, idxLoadTime string, maskedLoadTime string, idxUnloadTime string, maskedUnloadTime string) peer.Response {
+	chainCodeArgs := toChaincodeArgs("recordShipment", truckID, idxLoadTime, maskedLoadTime, idxUnloadTime, maskedUnloadTime)
 	return stub.InvokeChaincode("myscc", chainCodeArgs, channelName)
 }
 
-func sourceItem(stub shim.ChaincodeStubInterface, itemID string, seq string) peer.Response {
-	chainCodeArgs := toChaincodeArgs("sourceItem", itemID, seq)
+func queryPositions(stub shim.ChaincodeStubInterface, truckID string, idxInitTime string, maskedInitTime string, idxEndTime string, maskedEndTime string) peer.Response {
+	chainCodeArgs := toChaincodeArgs("queryPositions", truckID, idxInitTime, maskedInitTime, idxEndTime, maskedEndTime)
 	return stub.InvokeChaincode("myscc", chainCodeArgs, channelName)
 }

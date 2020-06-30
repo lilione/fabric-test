@@ -111,6 +111,18 @@
 			"revisionTime": "2020-02-21T11:14:35Z"
 		},
 		{
+			"checksumSHA1": "Ld0iviZSRGAKK6WSoti+3++1RmY=",
+			"path": "golang.org/x/sys/internal/unsafeheader",
+			"revision": "226ff32320da7b90d0b5bc2365f4e359c466fb78",
+			"revisionTime": "2020-06-10T10:21:08Z"
+		},
+		{
+			"checksumSHA1": "vdzE+3LNjuZhyoJ6dHPuxD6zRXo=",
+			"path": "golang.org/x/sys/unix",
+			"revision": "226ff32320da7b90d0b5bc2365f4e359c466fb78",
+			"revisionTime": "2020-06-10T10:21:08Z"
+		},
+		{
 			"checksumSHA1": "CbpjEkkOeh0fdM/V8xKDdI0AA88=",
 			"path": "golang.org/x/text/secure/bidirule",
 			"revision": "929e72ca90deac4784bbe451caf10faa5b256ebe",
@@ -369,5 +381,5 @@
 			"revisionTime": "2020-02-18T21:59:21Z"
 		}
 	],
-	"rootPath": "github.com/lilione/fabric-test/chaincode/cc"
+	"rootPath": "github.com/lilione/fabric-test/chaincode/mycc"
 }

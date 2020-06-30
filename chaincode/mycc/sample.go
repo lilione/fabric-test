@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-
 	"github.com/hyperledger/fabric-chaincode-go/shim"
 	"github.com/hyperledger/fabric-protos-go/peer"
 )
@@ -22,32 +21,31 @@ func (s *SmartContract) Invoke(stub shim.ChaincodeStubInterface) peer.Response {
 		response := getInputmaskIdx(stub, num)
 		return shim.Success(response.Payload)
 
-	} else if fn == "registerItem" {
-		idxRegistrant := args[0]
-		maskedRegistrant := args[1]
-		idxAmt := args[2]
-		maskedAmt := args[3]
-		response := registerItem(stub, idxRegistrant, maskedRegistrant, idxAmt, maskedAmt)
+	} else if fn == "createTruck" {
+		response := createTruck(stub)
 		return shim.Success(response.Payload)
+	} else if fn == "recordShipment" {
+		truckID := args[0]
+		idxLoadTime := args[1]
+		maskedLoadTime := args[2]
+		idxUnloadTime := args[3]
+		maskedUnloadTime := args[4]
 
-	} else if fn == "handOffItemToNextProvider" {
-		idxInputProvider := args[0]
-		maskedInputProvider := args[1]
-		idxOutputProvider := args[2]
-		maskedOutputProvider := args[3]
-		idxAmt := args[4]
-		maskedAmt := args[5]
-		itemID := args[6]
-		prevSeq := args[7]
-		response := handOffItemToNextProvider(stub, idxInputProvider, maskedInputProvider, idxOutputProvider, maskedOutputProvider, idxAmt, maskedAmt, itemID, prevSeq)
+		response := recordShipment(stub, truckID, idxLoadTime, maskedLoadTime, idxUnloadTime, maskedUnloadTime)
+		if response.Status == 200 {
+			return shim.Success(response.Payload)
+		} else {
+			return shim.Error(response.Message)
+		}
+	} else if fn == "queryPositions" {
+		truckID := args[0]
+		idxInitTime := args[1]
+		maskedInitTime := args[2]
+		idxEndTime := args[3]
+		maskedEndTime := args[4]
+
+		response := queryPositions(stub, truckID, idxInitTime, maskedInitTime, idxEndTime, maskedEndTime)
 		return shim.Success(response.Payload)
-
-	} else if fn == "sourceItem" {
-		itemID := args[0]
-		seq := args[1]
-		response := sourceItem(stub, itemID, seq)
-		return shim.Success(response.Payload)
-
 	}
 
 	return shim.Error("Invalid Smart Contract function name.")

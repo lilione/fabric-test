@@ -1,13 +1,18 @@
 #!/usr/bin/env bash
 set -e
 
-# build system chaincode
-#echo "building system chaincode"
-#cd $GOPATH/src/github.com/lilione/fabric-test/chaincode/myscc
-#go build -buildmode=plugin
-
 docker stop $(docker ps | grep 'client' | awk '{print $1}')
 docker rm $(docker ps -a | grep "client" | awk '{print $1}')
+
+# build system chaincode
+echo "building system chaincode"
+cd $GOPATH/src/github.com/lilione/fabric-test/chaincode/myscc
+go build -buildmode=plugin
+
+# build fabric peer binary
+#echo "building fabric-peer binary"
+#cd $GOPATH/src/github.com/hyperledger/fabric
+#GO_TAGS+=" pluginsenabled" make peer
 
 # install and instantiate application chaincode
 cd $GOPATH/src/github.com/lilione/fabric-test/fabric-test
