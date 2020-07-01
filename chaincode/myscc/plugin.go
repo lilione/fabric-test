@@ -8,7 +8,6 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"strconv"
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 	"github.com/hyperledger/fabric/protos/peer"
@@ -59,16 +58,31 @@ func putTruck(stub shim.ChaincodeStubInterface, key string, truckInstance truck)
 }
 
 func inRange(x string, l string, r string) bool {
-	fmt.Println("inRange")
 	if cmp(x, l) {
-		fmt.Println("cmp(x, l)")
 		return false
 	}
 	if cmp(r, x) {
-		fmt.Println("cmp(r, x)")
 		return false
 	}
-	fmt.Println("pass")
+	return true
+}
+
+func intersect(l_1 string, r_1 string, l_2 string, r_2 string) bool {
+	var l_max string
+	if cmp(l_1, l_2) {
+		l_max = l_2
+	} else {
+		l_max = l_1
+	}
+	var r_min string
+	if cmp(r_1, r_2) {
+		r_min = r_1
+	} else {
+		r_min = r_2
+	}
+	if cmp(r_min, l_max) {
+		return false
+	}
 	return true
 }
 
@@ -142,27 +156,31 @@ func (s *scc) Invoke(stub shim.ChaincodeStubInterface) peer.Response {
 
 		var positions string
 		truckInstance := getTruck(stub, ("truckRegistry" + truckID))
-		fmt.Println("len", len(truckInstance.ShipmentList))
 		for index, shipmentInstance := range truckInstance.ShipmentList {
-			fmt.Println("index", index)
 			shareLoadTime := dbGet(shipmentInstance.IdxLoadTime)
 			shareUnloadTime := dbGet(shipmentInstance.IdxUnloadTime)
 
-			if inRange(shareLoadTime, shareInitTime, shareEndTime) || inRange(shareUnloadTime, shareInitTime, shareEndTime) || inRange(shareInitTime, shareLoadTime, shareUnloadTime) {
-				fmt.Println("in")
+			//if inRange(shareLoadTime, shareInitTime, shareEndTime) || inRange(shareUnloadTime, shareInitTime, shareEndTime) || inRange(shareInitTime, shareLoadTime, shareUnloadTime) {
+			if intersect(shareLoadTime, shareUnloadTime, shareInitTime, shareEndTime) {
 				if positions != "" {
-					fmt.Println("add blank")
 					positions += " "
 				}
 				positions += strconv.Itoa(index)
 			}
-			fmt.Println("positions", positions)
 		}
-		fmt.Println("finished")
-		fmt.Println([]byte(positions))
 		return shim.Success([]byte(positions))
 
 	}
+	//else if fn == "queryNumber" {
+	//	truckID := args[0]
+	//	idxInitTime := args[1]
+	//	maskedInitTime := args[2]
+	//	idxEndTime := args[3]
+	//	maskedEndTime := args[4]
+	//
+	//	shareInitTime := calcShare(idxInitTime, maskedInitTime)
+	//	shareEndTime := calcShare(idxEndTime, maskedEndTime)
+	//}
 
 	return shim.Error("invalid function name.")
 }

@@ -2,14 +2,14 @@
 set -e
 
 # build system chaincode
-#echo "building system chaincode"
-#cd $GOPATH/src/github.com/lilione/fabric-test/chaincode/myscc
-#go build -buildmode=plugin
+echo "building system chaincode"
+cd $GOPATH/src/github.com/lilione/fabric-test/chaincode/myscc
+go build -buildmode=plugin
 
 # build fabric peer binary
-echo "building fabric-peer binary"
-cd $GOPATH/src/github.com/hyperledger/fabric
-GO_TAGS+=" pluginsenabled" make peer
+#echo "building fabric-peer binary"
+#cd $GOPATH/src/github.com/hyperledger/fabric
+#GO_TAGS+=" pluginsenabled" make peer
 
 # build fabric peer docker image
 #echo "building fabric-peer docker image"

@@ -57,7 +57,7 @@ func reconstruct(share string) string {
 	return ""
 }
 
-func cmp(share_a string, share_b string) bool {
+func cmp_share(share_a string, share_b string) string {
 	cmd := exec.Command("python3.7", "apps/fabric/src/server/cmp.py", share_a, share_b)
 	cmd.Dir = "/usr/src/HoneyBadgerMPC"
 	var outb, errb bytes.Buffer
@@ -73,36 +73,42 @@ func cmp(share_a string, share_b string) bool {
 			resultParts := strings.Split(line, " ")
 			if len(resultParts) >= 2 {
 				result := resultParts[1]
+				result = result[1 : len(result) - 1]
 				fmt.Println("The result is ", result)
-				res, _ := strconv.Atoi(result)
-				return (res > 0)
+				return result
 			}
 		}
 	}
-	return false
+	return ""
 }
 
-func eq(share_a string, share_b string) bool {
-	cmd := exec.Command("python3.7", "apps/fabric/src/server/eq.py", share_a, share_b)
-	cmd.Dir = "/usr/src/HoneyBadgerMPC"
-	var outb, errb bytes.Buffer
-	cmd.Stdout = &outb
-	cmd.Stderr = &errb
-	errmsg := cmd.Run()
-	if errmsg != nil {
-		log.Fatalf("cmd.Run() failed with %s\n", errmsg)
-	}
-	lines := strings.Split(outb.String(), "\n")
-	for _, line := range lines {
-		if strings.Contains(line, "result") {
-			resultParts := strings.Split(line, " ")
-			if len(resultParts) >= 2 {
-				result := resultParts[1]
-				fmt.Println("The result is ", result)
-				res, _ := strconv.Atoi(result)
-				return (res > 0)
-			}
-		}
-	}
-	return false
+func cmp(share_a string, share_b string) bool {
+	result_share := cmp_share(share_a, share_b)
+	result, _ := strconv.Atoi(reconstruct(result_share))
+	return result > 0
 }
+
+//func eq(share_a string, share_b string) bool {
+//	cmd := exec.Command("python3.7", "apps/fabric/src/server/eq.py", share_a, share_b)
+//	cmd.Dir = "/usr/src/HoneyBadgerMPC"
+//	var outb, errb bytes.Buffer
+//	cmd.Stdout = &outb
+//	cmd.Stderr = &errb
+//	errmsg := cmd.Run()
+//	if errmsg != nil {
+//		log.Fatalf("cmd.Run() failed with %s\n", errmsg)
+//	}
+//	lines := strings.Split(outb.String(), "\n")
+//	for _, line := range lines {
+//		if strings.Contains(line, "result") {
+//			resultParts := strings.Split(line, " ")
+//			if len(resultParts) >= 2 {
+//				result := resultParts[1]
+//				fmt.Println("The result is ", result)
+//				res, _ := strconv.Atoi(result)
+//				return (res > 0)
+//			}
+//		}
+//	}
+//	return false
+//}
