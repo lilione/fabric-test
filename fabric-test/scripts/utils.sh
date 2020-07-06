@@ -380,3 +380,9 @@ queryPositions() {
   arg="{\"Args\":[\"queryPositions\",\"$3\",\"$4\",\"$5\",\"$6\",\"$7\"]}"
   invoke $1 $2 $arg "queryPositions"
 }
+
+queryNumber() {
+  echo "queryNumber"
+  arg="{\"Args\":[\"queryNumber\",\"$3\",\"$4\",\"$5\",\"$6\",\"$7\"]}"
+  invoke $1 $2 $arg "queryNumber"
+}

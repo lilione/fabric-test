@@ -34,3 +34,8 @@ func queryPositions(stub shim.ChaincodeStubInterface, truckID string, idxInitTim
 	chainCodeArgs := toChaincodeArgs("queryPositions", truckID, idxInitTime, maskedInitTime, idxEndTime, maskedEndTime)
 	return stub.InvokeChaincode("myscc", chainCodeArgs, channelName)
 }
+
+func queryNumber(stub shim.ChaincodeStubInterface, truckID string, idxInitTime string, maskedInitTime string, idxEndTime string, maskedEndTime string) peer.Response {
+	chainCodeArgs := toChaincodeArgs("queryNumber", truckID, idxInitTime, maskedInitTime, idxEndTime, maskedEndTime)
+	return stub.InvokeChaincode("myscc", chainCodeArgs, channelName)
+}

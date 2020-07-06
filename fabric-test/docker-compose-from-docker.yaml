@@ -85,7 +85,7 @@ services:
       - CORE_PEER_GOSSIP_BOOTSTRAP=peer1.org1.example.com:7051
       - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.org1.example.com:7051
       - CORE_PEER_LOCALMSPID=Org1MSP
-      - CORE_CHAINCODE_EXECUTETIMEOUT=1000s
+      - CORE_CHAINCODE_EXECUTETIMEOUT=3000s
     volumes:
       - /Users/lilione/go/src/github.com/lilione/fabric/.build/bin/peer:/usr/local/bin/peer
       - /Users/lilione/go/src/github.com/lilione/fabric-test/chaincode/myscc/:/opt/lib/
@@ -126,7 +126,7 @@ services:
       - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer1.org1.example.com:7051
       - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.org1.example.com:7051
       - CORE_PEER_LOCALMSPID=Org1MSP
-      - CORE_CHAINCODE_EXECUTETIMEOUT=1000s
+      - CORE_CHAINCODE_EXECUTETIMEOUT=3000s
     volumes:
         - /Users/lilione/go/src/github.com/lilione/fabric/.build/bin/peer:/usr/local/bin/peer
         - /Users/lilione/go/src/github.com/lilione/fabric-test/chaincode/myscc/:/opt/lib/
@@ -167,7 +167,7 @@ services:
       - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.org2.example.com:7051
       - CORE_PEER_GOSSIP_BOOTSTRAP=peer1.org2.example.com:7051
       - CORE_PEER_LOCALMSPID=Org2MSP
-      - CORE_CHAINCODE_EXECUTETIMEOUT=1000s
+      - CORE_CHAINCODE_EXECUTETIMEOUT=3000s
     volumes:
         - /Users/lilione/go/src/github.com/lilione/fabric/.build/bin/peer:/usr/local/bin/peer
         - /Users/lilione/go/src/github.com/lilione/fabric-test/chaincode/myscc/:/opt/lib/
@@ -208,7 +208,7 @@ services:
       - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer1.org2.example.com:7051
       - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.org2.example.com:7051
       - CORE_PEER_LOCALMSPID=Org2MSP
-      - CORE_CHAINCODE_EXECUTETIMEOUT=1000s
+      - CORE_CHAINCODE_EXECUTETIMEOUT=3000s
     volumes:
         - /Users/lilione/go/src/github.com/lilione/fabric/.build/bin/peer:/usr/local/bin/peer
         - /Users/lilione/go/src/github.com/lilione/fabric-test/chaincode/myscc/:/opt/lib/

@@ -46,6 +46,15 @@ func (s *SmartContract) Invoke(stub shim.ChaincodeStubInterface) peer.Response {
 
 		response := queryPositions(stub, truckID, idxInitTime, maskedInitTime, idxEndTime, maskedEndTime)
 		return shim.Success(response.Payload)
+	} else if fn == "queryNumber" {
+		truckID := args[0]
+		idxInitTime := args[1]
+		maskedInitTime := args[2]
+		idxEndTime := args[3]
+		maskedEndTime := args[4]
+
+		response := queryNumber(stub, truckID, idxInitTime, maskedInitTime, idxEndTime, maskedEndTime)
+		return shim.Success(response.Payload)
 	}
 
 	return shim.Error("Invalid Smart Contract function name.")

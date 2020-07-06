@@ -8,7 +8,10 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"strconv"
+	//"github.com/hyperledger/fabric-chaincode-go/shim"
+	//"github.com/hyperledger/fabric-protos-go/peer"
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 	"github.com/hyperledger/fabric/protos/peer"
 )
@@ -57,34 +60,34 @@ func putTruck(stub shim.ChaincodeStubInterface, key string, truckInstance truck)
 	stub.PutState(key, truckJSON)
 }
 
-func inRange(x string, l string, r string) bool {
-	if cmp(x, l) {
-		return false
-	}
-	if cmp(r, x) {
-		return false
-	}
-	return true
-}
-
-func intersect(l_1 string, r_1 string, l_2 string, r_2 string) bool {
-	var l_max string
-	if cmp(l_1, l_2) {
-		l_max = l_2
-	} else {
-		l_max = l_1
-	}
-	var r_min string
-	if cmp(r_1, r_2) {
-		r_min = r_1
-	} else {
-		r_min = r_2
-	}
-	if cmp(r_min, l_max) {
-		return false
-	}
-	return true
-}
+//func inRange(x string, l string, r string) bool {
+//	if cmp(x, l) {
+//		return false
+//	}
+//	if cmp(r, x) {
+//		return false
+//	}
+//	return true
+//}
+//
+//func intersect(l_1 string, r_1 string, l_2 string, r_2 string) bool {
+//	var l_max string
+//	if cmp(l_1, l_2) {
+//		l_max = l_2
+//	} else {
+//		l_max = l_1
+//	}
+//	var r_min string
+//	if cmp(r_1, r_2) {
+//		r_min = r_1
+//	} else {
+//		r_min = r_2
+//	}
+//	if cmp(r_min, l_max) {
+//		return false
+//	}
+//	return true
+//}
 
 // Invoke implements the chaincode shim interface
 func (s *scc) Invoke(stub shim.ChaincodeStubInterface) peer.Response {
@@ -154,14 +157,14 @@ func (s *scc) Invoke(stub shim.ChaincodeStubInterface) peer.Response {
 		shareInitTime := calcShare(idxInitTime, maskedInitTime)
 		shareEndTime := calcShare(idxEndTime, maskedEndTime)
 
-		var positions string
+		positions := ""
 		truckInstance := getTruck(stub, ("truckRegistry" + truckID))
 		for index, shipmentInstance := range truckInstance.ShipmentList {
 			shareLoadTime := dbGet(shipmentInstance.IdxLoadTime)
 			shareUnloadTime := dbGet(shipmentInstance.IdxUnloadTime)
 
-			//if inRange(shareLoadTime, shareInitTime, shareEndTime) || inRange(shareUnloadTime, shareInitTime, shareEndTime) || inRange(shareInitTime, shareLoadTime, shareUnloadTime) {
-			if intersect(shareLoadTime, shareUnloadTime, shareInitTime, shareEndTime) {
+			fmt.Println(index)
+			if !cmp(shareInitTime, shareLoadTime) && !cmp(shareUnloadTime, shareEndTime) {
 				if positions != "" {
 					positions += " "
 				}
@@ -170,17 +173,29 @@ func (s *scc) Invoke(stub shim.ChaincodeStubInterface) peer.Response {
 		}
 		return shim.Success([]byte(positions))
 
+	} else if fn == "queryNumber" {
+		truckID := args[0]
+		idxInitTime := args[1]
+		maskedInitTime := args[2]
+		idxEndTime := args[3]
+		maskedEndTime := args[4]
+
+		shareInitTime := calcShare(idxInitTime, maskedInitTime)
+		shareEndTime := calcShare(idxEndTime, maskedEndTime)
+
+		cnt := "{0}"
+		truckInstance := getTruck(stub, ("truckRegistry" + truckID))
+		for index, shipmentInstance := range truckInstance.ShipmentList {
+			fmt.Println("index", index)
+			shareLoadTime := dbGet(shipmentInstance.IdxLoadTime)
+			shareUnloadTime := dbGet(shipmentInstance.IdxUnloadTime)
+
+			cnt = addShare(cnt, mulShare(oneMinusShare(cmpShare(shareInitTime, shareLoadTime)), oneMinusShare(cmpShare(shareUnloadTime, shareEndTime))))
+			fmt.Println("cnt", cnt)
+		}
+		cnt = reconstruct(cnt)
+		return shim.Success([]byte(cnt))
 	}
-	//else if fn == "queryNumber" {
-	//	truckID := args[0]
-	//	idxInitTime := args[1]
-	//	maskedInitTime := args[2]
-	//	idxEndTime := args[3]
-	//	maskedEndTime := args[4]
-	//
-	//	shareInitTime := calcShare(idxInitTime, maskedInitTime)
-	//	shareEndTime := calcShare(idxEndTime, maskedEndTime)
-	//}
 
 	return shim.Error("invalid function name.")
 }
