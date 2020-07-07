@@ -345,15 +345,29 @@ getInputmaskIdx() {
   invoke $1 $2 $arg "getInputmaskIdx"
 }
 
+# for supply chain app version 0
+#registerItem() {
+#  echo "registerItem"
+#  arg="{\"Args\":[\"registerItem\",\"$3\",\"$4\",\"$5\",\"$6\"]}"
+#  invoke $1 $2 $arg "registerItem"
+#}
+
+#handOffItemToNextProvider() {
+#  echo "handOffItemToNextProvider"
+#  arg="{\"Args\":[\"handOffItemToNextProvider\",\"$3\",\"$4\",\"$5\",\"$6\",\"$7\",\"$8\",\"$9\",\"${10}\"]}"
+#  invoke $1 $2 $arg "handOffItemToNextProvider"
+#}
+
+# for supply chain app version 2
 registerItem() {
   echo "registerItem"
-  arg="{\"Args\":[\"registerItem\",\"$3\",\"$4\",\"$5\",\"$6\"]}"
+  arg="{\"Args\":[\"registerItem\",\"$3\"]}"
   invoke $1 $2 $arg "registerItem"
 }
 
 handOffItemToNextProvider() {
   echo "handOffItemToNextProvider"
-  arg="{\"Args\":[\"handOffItemToNextProvider\",\"$3\",\"$4\",\"$5\",\"$6\",\"$7\",\"$8\",\"$9\",\"${10}\"]}"
+  arg="{\"Args\":[\"handOffItemToNextProvider\",\"$3\",\"$4\",\"$5\",\"$6\",\"$7\"]}"
   invoke $1 $2 $arg "handOffItemToNextProvider"
 }
 
