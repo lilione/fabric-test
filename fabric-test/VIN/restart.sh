@@ -4,10 +4,25 @@
 docker stop $(docker ps | grep 'client' | awk '{print $1}')
 docker rm $(docker ps -a | grep "client" | awk '{print $1}')
 
-# build system chaincode
-echo "building system chaincode"
-cd $GOPATH/src/github.com/lilione/fabric-test/chaincode/myscc
+docker rmi -f $(docker images | grep 'dev' | awk '{print $1}')
+
+## build system chaincode
+#echo "building system chaincode"
+cd $GOPATH/src/github.com/lilione/fabric-test/chaincode/supplychain_scc_1
 go build -buildmode=plugin
+cd $GOPATH/src/github.com/lilione/fabric-test/chaincode/supplychain_scc_2
+go build -buildmode=plugin
+cd $GOPATH/src/github.com/lilione/fabric-test/chaincode/supplychain_scc_3
+go build -buildmode=plugin
+
+## build fabric peer binary
+#echo "building fabric-peer binary"
+#cd $GOPATH/src/github.com/hyperledger/fabric
+#GO_TAGS+=" pluginsenabled" make peer
+
+# build fabric peer docker image
+#echo "building fabric-peer docker image"
+#DOCKER_DYNAMIC_LINK=true GO_TAGS+=" pluginsenabled" make peer-docker IN_DOCKER=true
 
 # install and instantiate application chaincode
 cd $GOPATH/src/github.com/lilione/fabric-test/fabric-test
@@ -28,7 +43,7 @@ docker run -d \
 docker network connect net_byfn client
 docker exec -it client bash
 
-#docker logs peer0.org1.example.com
-#docker logs peer0.org2.example.com
-#docker logs peer1.org1.example.com
-#docker logs peer1.org2.example.com
+# docker logs peer0.org1.example.com
+# docker logs peer0.org2.example.com
+# docker logs peer1.org1.example.com
+# docker logs peer1.org2.example.com

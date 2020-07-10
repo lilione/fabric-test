@@ -60,35 +60,6 @@ func putTruck(stub shim.ChaincodeStubInterface, key string, truckInstance truck)
 	stub.PutState(key, truckJSON)
 }
 
-//func inRange(x string, l string, r string) bool {
-//	if cmp(x, l) {
-//		return false
-//	}
-//	if cmp(r, x) {
-//		return false
-//	}
-//	return true
-//}
-//
-//func intersect(l_1 string, r_1 string, l_2 string, r_2 string) bool {
-//	var l_max string
-//	if cmp(l_1, l_2) {
-//		l_max = l_2
-//	} else {
-//		l_max = l_1
-//	}
-//	var r_min string
-//	if cmp(r_1, r_2) {
-//		r_min = r_1
-//	} else {
-//		r_min = r_2
-//	}
-//	if cmp(r_min, l_max) {
-//		return false
-//	}
-//	return true
-//}
-
 // Invoke implements the chaincode shim interface
 func (s *scc) Invoke(stub shim.ChaincodeStubInterface) peer.Response {
 	fn, args := stub.GetFunctionAndParameters()

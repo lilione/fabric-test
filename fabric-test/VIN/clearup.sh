@@ -26,6 +26,3 @@ rm log_0.txt
 rm log_1.txt
 rm log_2.txt
 rm log_3.txt
-
-#cd /Users/lilione/go/src/github.com/lilione/fabric-test/chaincode/myscc
-#rm myscc.so

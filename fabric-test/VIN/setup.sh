@@ -1,17 +1,27 @@
 #!/usr/bin/env bash
 set -e
 
-# build system chaincode
-echo "building system chaincode"
-cd $GOPATH/src/github.com/lilione/fabric-test/chaincode/myscc
-go build -buildmode=plugin
+## build system chaincode
+#echo "building system chaincode"
+#
+#cd $GOPATH/src/github.com/lilione/fabric-test/chaincode/supplychain_scc_1
+#rm supplychain_scc_1.so
+#go build -buildmode=plugin
+#
+#cd $GOPATH/src/github.com/lilione/fabric-test/chaincode/supplychain_scc_2
+#rm supplychain_scc_2.so
+#go build -buildmode=plugin
+#
+#cd $GOPATH/src/github.com/lilione/fabric-test/chaincode/supplychain_scc_3
+#rm supplychain_scc_3.so
+#go build -buildmode=plugin
 
-# build fabric peer binary
+## build fabric peer binary
 #echo "building fabric-peer binary"
 #cd $GOPATH/src/github.com/hyperledger/fabric
 #GO_TAGS+=" pluginsenabled" make peer
 
-# build fabric peer docker image
+## build fabric peer docker image
 #echo "building fabric-peer docker image"
 #DOCKER_DYNAMIC_LINK=true GO_TAGS+=" pluginsenabled" make peer-docker IN_DOCKER=true
 
@@ -45,20 +55,14 @@ docker run -d \
 docker network connect net_byfn client
 docker exec -it client bash
 
-# docker exec -it cli bash
-# export CHANNEL_NAME=mychannel
-# bash scripts/run_cmd.sh update 0 1 "1" "2"
-# bash scripts/run_cmd.sh query 0 1 "1"
-# bash scripts/run_cmd.sh getInputmaskIdx 0 1
-# bash scripts/run_cmd.sh sendMaskedInput 0 1 0 12364027589777478026535591640119302239196130422776730929764185853585614015560
-#bash scripts/run_cmd.sh reconstruct 0 1 0
-
 # docker exec -it peer0.org1.example.com bash
 # docker exec -it peer1.org1.example.com bash
 # docker exec -it peer0.org2.example.com bash
 # docker exec -it peer1.org2.example.com bash
 
-# python3.7 apps/fabric/src/client/start_client.py
+# python3.7 apps/fabric/src/client/start_client_1.py
+# python3.7 apps/fabric/src/client/start_client_2.py
+# python3.7 apps/fabric/src/client/start_client_3.py
 
 #docker run \
 # -v /Users/lilione/go/src/github.com/lilione/HoneyBadgerMPC:/usr/src/HoneyBadgerMPC \

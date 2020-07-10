@@ -18,9 +18,6 @@ LANGUAGE=`echo "$LANGUAGE" | tr [:upper:] [:lower:]`
 COUNTER=1
 MAX_RETRY=10
 
-#CC_SRC_PATH="github.com/chaincode/rockpaperscissors/"
-CC_SRC_PATH="github.com/chaincode/mycc/"
-
 echo "Channel name : "$CHANNEL_NAME
 
 # import utils
@@ -71,23 +68,37 @@ updateAnchorPeers 0 1
 echo "Updating anchor peers for org2..."
 updateAnchorPeers 0 2
 
-## Install chaincode
-echo "Installing chaincode on peer0.org1..."
-installChaincode 0 1
-echo "Installing chaincode on peer1.org1..."
-installChaincode 1 1
-echo "Installing chaincode on peer0.org2..."
-installChaincode 0 2
-echo "Installing chaincode on peer1.org2..."
-installChaincode 1 2
+installAndInstantiate() {
+  # Install chaincode
+  echo "Installing chaincode on peer0.org1..."
+  installChaincode 0 1
+  echo "Installing chaincode on peer1.org1..."
+  installChaincode 1 1
+  echo "Installing chaincode on peer0.org2..."
+  installChaincode 0 2
+  echo "Installing chaincode on peer1.org2..."
+  installChaincode 1 2
 
-# Instantiate chaincode on peer0.org1
-echo "Instantiating chaincode on peer0.org1..."
-instantiateChaincode 0 1
+  # Instantiate chaincode on peer0.org1
+  echo "Instantiating chaincode on peer0.org1..."
+  instantiateChaincode 0 1
 
-# Instantiate chaincode on peer0.org2
-echo "Instantiating chaincode on peer0.org2..."
-instantiateChaincode 0 2
+  # Instantiate chaincode on peer0.org2
+  echo "Instantiating chaincode on peer0.org2..."
+  instantiateChaincode 0 2
+}
+
+CC_SRC_PATH="github.com/chaincode/supplychain_cc_1/"
+CC_NAME=supplychain_cc_1
+installAndInstantiate
+
+CC_SRC_PATH="github.com/chaincode/supplychain_cc_2/"
+CC_NAME=supplychain_cc_2
+installAndInstantiate
+
+CC_SRC_PATH="github.com/chaincode/supplychain_cc_3/"
+CC_NAME=supplychain_cc_3
+installAndInstantiate
 
 sleep 1
 

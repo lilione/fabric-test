@@ -19,11 +19,20 @@ func (s *SmartContract) Invoke(stub shim.ChaincodeStubInterface) peer.Response {
 	if fn == "getInputmaskIdx" {
 		num := args[0]
 		response := getInputmaskIdx(stub, num)
-		return shim.Success(response.Payload)
+		if response.Status == 200 {
+			return shim.Success(response.Payload)
+		} else {
+			return shim.Error(response.Message)
+		}
 
 	} else if fn == "createTruck" {
 		response := createTruck(stub)
-		return shim.Success(response.Payload)
+		if response.Status == 200 {
+			return shim.Success(response.Payload)
+		} else {
+			return shim.Error(response.Message)
+		}
+
 	} else if fn == "recordShipment" {
 		truckID := args[0]
 		idxLoadTime := args[1]
@@ -37,6 +46,7 @@ func (s *SmartContract) Invoke(stub shim.ChaincodeStubInterface) peer.Response {
 		} else {
 			return shim.Error(response.Message)
 		}
+
 	} else if fn == "queryPositions" {
 		truckID := args[0]
 		idxInitTime := args[1]
@@ -45,7 +55,12 @@ func (s *SmartContract) Invoke(stub shim.ChaincodeStubInterface) peer.Response {
 		maskedEndTime := args[4]
 
 		response := queryPositions(stub, truckID, idxInitTime, maskedInitTime, idxEndTime, maskedEndTime)
-		return shim.Success(response.Payload)
+		if response.Status == 200 {
+			return shim.Success(response.Payload)
+		} else {
+			return shim.Error(response.Message)
+		}
+
 	} else if fn == "queryNumber" {
 		truckID := args[0]
 		idxInitTime := args[1]
@@ -54,7 +69,12 @@ func (s *SmartContract) Invoke(stub shim.ChaincodeStubInterface) peer.Response {
 		maskedEndTime := args[4]
 
 		response := queryNumber(stub, truckID, idxInitTime, maskedInitTime, idxEndTime, maskedEndTime)
-		return shim.Success(response.Payload)
+		if response.Status == 200 {
+			return shim.Success(response.Payload)
+		} else {
+			return shim.Error(response.Message)
+		}
+
 	}
 
 	return shim.Error("Invalid Smart Contract function name.")

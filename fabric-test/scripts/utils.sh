@@ -12,7 +12,6 @@ PEER1_ORG1_CA=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto-config/p
 PEER0_ORG2_CA=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto-config/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/tls/ca.crt
 PEER1_ORG2_CA=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto-config/peerOrganizations/org2.example.com/peers/peer1.org2.example.com/tls/ca.crt
 
-CC_NAME=mycc
 # verify the result of the end-to-end test
 verifyResult() {
   if [ $1 -ne 0 ]; then
@@ -339,63 +338,81 @@ invoke() {
   echo
 }
 
-getInputmaskIdx() {
+# for supplychain version 1
+1_getInputmaskIdx() {
+  CC_NAME=supplychain_cc_1
   echo "getInputmaskIdx"
   arg="{\"Args\":[\"getInputmaskIdx\",\"$3\"]}"
   invoke $1 $2 $arg "getInputmaskIdx"
 }
 
-# for supply chain app version 0
-#registerItem() {
-#  echo "registerItem"
-#  arg="{\"Args\":[\"registerItem\",\"$3\",\"$4\",\"$5\",\"$6\"]}"
-#  invoke $1 $2 $arg "registerItem"
-#}
-
-#handOffItemToNextProvider() {
-#  echo "handOffItemToNextProvider"
-#  arg="{\"Args\":[\"handOffItemToNextProvider\",\"$3\",\"$4\",\"$5\",\"$6\",\"$7\",\"$8\",\"$9\",\"${10}\"]}"
-#  invoke $1 $2 $arg "handOffItemToNextProvider"
-#}
-
-# for supply chain app version 2
-registerItem() {
+1_registerItem() {
+  CC_NAME=supplychain_cc_1
   echo "registerItem"
-  arg="{\"Args\":[\"registerItem\",\"$3\"]}"
+  arg="{\"Args\":[\"registerItem\",\"$3\",\"$4\",\"$5\",\"$6\"]}"
   invoke $1 $2 $arg "registerItem"
 }
 
-handOffItemToNextProvider() {
+1_handOffItemToNextProvider() {
+  CC_NAME=supplychain_cc_1
   echo "handOffItemToNextProvider"
-  arg="{\"Args\":[\"handOffItemToNextProvider\",\"$3\",\"$4\",\"$5\",\"$6\",\"$7\"]}"
+  arg="{\"Args\":[\"handOffItemToNextProvider\",\"$3\",\"$4\",\"$5\",\"$6\",\"$7\",\"$8\",\"$9\",\"${10}\"]}"
   invoke $1 $2 $arg "handOffItemToNextProvider"
 }
 
-sourceItem() {
+1_sourceItem() {
+  CC_NAME=supplychain_cc_1
   echo "sourceItem"
   arg="{\"Args\":[\"sourceItem\",\"$3\",\"$4\"]}"
   invoke $1 $2 $arg "sourceItem"
 }
 
-createTruck() {
+# for supplychain version 2
+2_registerItem() {
+  CC_NAME=supplychain_cc_2
+  echo "2_registerItem"
+  arg="{\"Args\":[\"registerItem\",\"$3\"]}"
+  invoke $1 $2 $arg "registerItem"
+}
+
+2_handOffItemToNextProvider() {
+  CC_NAME=supplychain_cc_2
+  echo "2_handOffItemToNextProvider"
+  arg="{\"Args\":[\"handOffItemToNextProvider\",\"$3\",\"$4\",\"$5\",\"$6\",\"$7\"]}"
+  invoke $1 $2 $arg "handOffItemToNextProvider"
+}
+
+# for supplychain version 3
+3_getInputmaskIdx() {
+  CC_NAME=supplychain_cc_3
+  echo "getInputmaskIdx"
+  arg="{\"Args\":[\"getInputmaskIdx\",\"$3\"]}"
+  invoke $1 $2 $arg "getInputmaskIdx"
+}
+
+3_createTruck() {
+  CC_NAME=supplychain_cc_3
   echo "createTruck"
   arg="{\"Args\":[\"createTruck\"]}"
   invoke $1 $2 $arg "createTruck"
 }
 
-recordShipment() {
+3_recordShipment() {
+  CC_NAME=supplychain_cc_3
   echo "recordShipment"
   arg="{\"Args\":[\"recordShipment\",\"$3\",\"$4\",\"$5\",\"$6\",\"$7\"]}"
   invoke $1 $2 $arg "recordShipment"
 }
 
-queryPositions() {
+3_queryPositions() {
+  CC_NAME=supplychain_cc_3
   echo "queryPositions"
   arg="{\"Args\":[\"queryPositions\",\"$3\",\"$4\",\"$5\",\"$6\",\"$7\"]}"
   invoke $1 $2 $arg "queryPositions"
 }
 
-queryNumber() {
+3_queryNumber() {
+  CC_NAME=supplychain_cc_3
   echo "queryNumber"
   arg="{\"Args\":[\"queryNumber\",\"$3\",\"$4\",\"$5\",\"$6\",\"$7\"]}"
   invoke $1 $2 $arg "queryNumber"
