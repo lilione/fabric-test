@@ -12,3 +12,5 @@
 .idea/
 */log.txt
 */log
+*.so
+*/mychannel.block

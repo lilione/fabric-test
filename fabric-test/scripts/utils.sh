@@ -339,6 +339,14 @@ invoke() {
 }
 
 # for supplychain version 1
+
+1_queryShipment() {
+  CC_NAME=supplychain_cc_1
+  echo "queryShipment"
+  arg="{\"Args\":[\"queryShipment\",\"$3\",\"$4\"]}"
+  invoke $1 $2 $arg "queryShipment"
+}
+
 1_getInputmaskIdx() {
   CC_NAME=supplychain_cc_1
   echo "getInputmaskIdx"
@@ -360,12 +368,19 @@ invoke() {
   invoke $1 $2 $arg "handOffItemToNextProvider"
 }
 
-1_sourceItem() {
+1_handOffItemToNextProviderFinalize() {
   CC_NAME=supplychain_cc_1
-  echo "sourceItem"
-  arg="{\"Args\":[\"sourceItem\",\"$3\",\"$4\"]}"
-  invoke $1 $2 $arg "sourceItem"
+  echo "handOffItemToNextProviderFinalize"
+  arg="{\"Args\":[\"handOffItemToNextProviderFinalize\",\"$3\",\"$4\",\"$5\",\"$6\",\"$7\",\"$8\",\"$9\",\"${10}\",\"${11}\"]}"
+  invoke $1 $2 $arg "handOffItemToNextProviderFinalize"
 }
+
+#1_sourceItem() {
+#  CC_NAME=supplychain_cc_1
+#  echo "sourceItem"
+#  arg="{\"Args\":[\"sourceItem\",\"$3\",\"$4\"]}"
+#  invoke $1 $2 $arg "sourceItem"
+#}
 
 # for supplychain version 2
 2_registerItem() {

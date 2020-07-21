@@ -38,7 +38,7 @@ docker run -it \
 	bash
 
 # enter stopped container
-#docker restart setup-honeybadger
+# docker restart setup-honeybadger
 
 # enter running container
-#docker exec -it setup-honeybadger bash
+# docker exec -it setup-honeybadger bash

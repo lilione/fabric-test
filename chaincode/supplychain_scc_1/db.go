@@ -10,7 +10,6 @@ import (
 var mut sync.Mutex
 
 func dbPut(key string, value string) {
-	fmt.Println("put", key)
 	mut.Lock()
 	db, _ := leveldb.OpenFile("/opt/db", nil)
 	err := db.Put([]byte(key), []byte(value), nil)
@@ -22,8 +21,7 @@ func dbPut(key string, value string) {
 
 }
 
-func dbGet(key string) string {
-	fmt.Println("get", key)
+func dbGet(key string) []byte {
 	mut.Lock()
 	db, _ := leveldb.OpenFile("/opt/db", nil)
 	data, err := db.Get([]byte(key), nil)
@@ -33,5 +31,5 @@ func dbGet(key string) string {
 	db.Close()
 	mut.Unlock()
 
-	return string(data)
+	return data
 }

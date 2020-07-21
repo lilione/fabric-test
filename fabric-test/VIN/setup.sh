@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 set -e
 
-## build system chaincode
-#echo "building system chaincode"
-#
-#cd $GOPATH/src/github.com/lilione/fabric-test/chaincode/supplychain_scc_1
-#rm supplychain_scc_1.so
-#go build -buildmode=plugin
-#
+# build system chaincode
+echo "building system chaincode"
+
+cd $GOPATH/src/github.com/lilione/fabric-test/chaincode/supplychain_scc_1
+rm supplychain_scc_1.so || true
+go build -buildmode=plugin
+
 #cd $GOPATH/src/github.com/lilione/fabric-test/chaincode/supplychain_scc_2
 #rm supplychain_scc_2.so
 #go build -buildmode=plugin
@@ -59,8 +59,9 @@ docker exec -it client bash
 # docker exec -it peer1.org1.example.com bash
 # docker exec -it peer0.org2.example.com bash
 # docker exec -it peer1.org2.example.com bash
+# docker exec -it cli bash
 
-# python3.7 apps/fabric/src/client/start_client_1.py
+# python3.7 apps/fabric/src/supplychain/v1/start_client_1.py
 # python3.7 apps/fabric/src/client/start_client_2.py
 # python3.7 apps/fabric/src/client/start_client_3.py
 

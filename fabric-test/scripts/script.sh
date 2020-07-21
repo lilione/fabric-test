@@ -82,23 +82,19 @@ installAndInstantiate() {
   # Instantiate chaincode on peer0.org1
   echo "Instantiating chaincode on peer0.org1..."
   instantiateChaincode 0 1
-
-  # Instantiate chaincode on peer0.org2
-  echo "Instantiating chaincode on peer0.org2..."
-  instantiateChaincode 0 2
 }
 
 CC_SRC_PATH="github.com/chaincode/supplychain_cc_1/"
 CC_NAME=supplychain_cc_1
 installAndInstantiate
 
-CC_SRC_PATH="github.com/chaincode/supplychain_cc_2/"
-CC_NAME=supplychain_cc_2
-installAndInstantiate
-
-CC_SRC_PATH="github.com/chaincode/supplychain_cc_3/"
-CC_NAME=supplychain_cc_3
-installAndInstantiate
+#CC_SRC_PATH="github.com/chaincode/supplychain_cc_2/"
+#CC_NAME=supplychain_cc_2
+#installAndInstantiate
+#
+#CC_SRC_PATH="github.com/chaincode/supplychain_cc_3/"
+#CC_NAME=supplychain_cc_3
+#installAndInstantiate
 
 sleep 1
 

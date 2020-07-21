@@ -85,8 +85,9 @@ services:
       - CORE_PEER_GOSSIP_BOOTSTRAP=peer1.org1.example.com:7051
       - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.org1.example.com:7051
       - CORE_PEER_LOCALMSPID=Org1MSP
-      - CORE_CHAINCODE_EXECUTETIMEOUT=3000s
+#      - CORE_CHAINCODE_EXECUTETIMEOUT=3000s
     volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
       - /Users/lilione/go/src/github.com/lilione/fabric/.build/bin/peer:/usr/local/bin/peer
       - /Users/lilione/go/src/github.com/lilione/fabric-test/chaincode/supplychain_scc_1/supplychain_scc_1.so:/opt/lib/supplychain_scc_1.so
       - /Users/lilione/go/src/github.com/lilione/fabric-test/chaincode/supplychain_scc_2/supplychain_scc_2.so:/opt/lib/supplychain_scc_2.so
@@ -128,18 +129,19 @@ services:
       - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer1.org1.example.com:7051
       - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.org1.example.com:7051
       - CORE_PEER_LOCALMSPID=Org1MSP
-      - CORE_CHAINCODE_EXECUTETIMEOUT=3000s
+#      - CORE_CHAINCODE_EXECUTETIMEOUT=3000s
     volumes:
-        - /Users/lilione/go/src/github.com/lilione/fabric/.build/bin/peer:/usr/local/bin/peer
-        - /Users/lilione/go/src/github.com/lilione/fabric-test/chaincode/supplychain_scc_1/supplychain_scc_1.so:/opt/lib/supplychain_scc_1.so
-        - /Users/lilione/go/src/github.com/lilione/fabric-test/chaincode/supplychain_scc_2/supplychain_scc_2.so:/opt/lib/supplychain_scc_2.so
-        - /Users/lilione/go/src/github.com/lilione/fabric-test/chaincode/supplychain_scc_3/supplychain_scc_3.so:/opt/lib/supplychain_scc_3.so
-        - /var/run/:/host/var/run/
-        - peer1.org1.example.com-msp:/etc/hyperledger/fabric/msp
-        - peer1.org1.example.com-tls:/etc/hyperledger/fabric/tls
-        - peer1.org1.example.com:/var/hyperledger/production
-        - /Users/lilione/go/src/github.com/lilione/fabric-test/fabric-test/VIN/start_peer.sh:/opt/start_peer.sh
-        - /Users/lilione/go/src/github.com/lilione/HoneyBadgerMPC:/usr/src/HoneyBadgerMPC
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /Users/lilione/go/src/github.com/lilione/fabric/.build/bin/peer:/usr/local/bin/peer
+      - /Users/lilione/go/src/github.com/lilione/fabric-test/chaincode/supplychain_scc_1/supplychain_scc_1.so:/opt/lib/supplychain_scc_1.so
+      - /Users/lilione/go/src/github.com/lilione/fabric-test/chaincode/supplychain_scc_2/supplychain_scc_2.so:/opt/lib/supplychain_scc_2.so
+      - /Users/lilione/go/src/github.com/lilione/fabric-test/chaincode/supplychain_scc_3/supplychain_scc_3.so:/opt/lib/supplychain_scc_3.so
+      - /var/run/:/host/var/run/
+      - peer1.org1.example.com-msp:/etc/hyperledger/fabric/msp
+      - peer1.org1.example.com-tls:/etc/hyperledger/fabric/tls
+      - peer1.org1.example.com:/var/hyperledger/production
+      - /Users/lilione/go/src/github.com/lilione/fabric-test/fabric-test/VIN/start_peer.sh:/opt/start_peer.sh
+      - /Users/lilione/go/src/github.com/lilione/HoneyBadgerMPC:/usr/src/HoneyBadgerMPC
     working_dir: /opt
     command: bash start_peer.sh
     ports:
@@ -171,18 +173,19 @@ services:
       - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.org2.example.com:7051
       - CORE_PEER_GOSSIP_BOOTSTRAP=peer1.org2.example.com:7051
       - CORE_PEER_LOCALMSPID=Org2MSP
-      - CORE_CHAINCODE_EXECUTETIMEOUT=3000s
+#      - CORE_CHAINCODE_EXECUTETIMEOUT=3000s
     volumes:
-        - /Users/lilione/go/src/github.com/lilione/fabric/.build/bin/peer:/usr/local/bin/peer
-        - /Users/lilione/go/src/github.com/lilione/fabric-test/chaincode/supplychain_scc_1/supplychain_scc_1.so:/opt/lib/supplychain_scc_1.so
-        - /Users/lilione/go/src/github.com/lilione/fabric-test/chaincode/supplychain_scc_2/supplychain_scc_2.so:/opt/lib/supplychain_scc_2.so
-        - /Users/lilione/go/src/github.com/lilione/fabric-test/chaincode/supplychain_scc_3/supplychain_scc_3.so:/opt/lib/supplychain_scc_3.so
-        - /var/run/:/host/var/run/
-        - peer0.org2.example.com-msp:/etc/hyperledger/fabric/msp
-        - peer0.org2.example.com-tls:/etc/hyperledger/fabric/tls
-        - peer0.org2.example.com:/var/hyperledger/production
-        - /Users/lilione/go/src/github.com/lilione/fabric-test/fabric-test/VIN/start_peer.sh:/opt/start_peer.sh
-        - /Users/lilione/go/src/github.com/lilione/HoneyBadgerMPC:/usr/src/HoneyBadgerMPC
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /Users/lilione/go/src/github.com/lilione/fabric/.build/bin/peer:/usr/local/bin/peer
+      - /Users/lilione/go/src/github.com/lilione/fabric-test/chaincode/supplychain_scc_1/supplychain_scc_1.so:/opt/lib/supplychain_scc_1.so
+      - /Users/lilione/go/src/github.com/lilione/fabric-test/chaincode/supplychain_scc_2/supplychain_scc_2.so:/opt/lib/supplychain_scc_2.so
+      - /Users/lilione/go/src/github.com/lilione/fabric-test/chaincode/supplychain_scc_3/supplychain_scc_3.so:/opt/lib/supplychain_scc_3.so
+      - /var/run/:/host/var/run/
+      - peer0.org2.example.com-msp:/etc/hyperledger/fabric/msp
+      - peer0.org2.example.com-tls:/etc/hyperledger/fabric/tls
+      - peer0.org2.example.com:/var/hyperledger/production
+      - /Users/lilione/go/src/github.com/lilione/fabric-test/fabric-test/VIN/start_peer.sh:/opt/start_peer.sh
+      - /Users/lilione/go/src/github.com/lilione/HoneyBadgerMPC:/usr/src/HoneyBadgerMPC
     working_dir: /opt
     command: bash start_peer.sh
     ports:
@@ -214,18 +217,19 @@ services:
       - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer1.org2.example.com:7051
       - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.org2.example.com:7051
       - CORE_PEER_LOCALMSPID=Org2MSP
-      - CORE_CHAINCODE_EXECUTETIMEOUT=3000s
+#      - CORE_CHAINCODE_EXECUTETIMEOUT=3000s
     volumes:
-        - /Users/lilione/go/src/github.com/lilione/fabric/.build/bin/peer:/usr/local/bin/peer
-        - /Users/lilione/go/src/github.com/lilione/fabric-test/chaincode/supplychain_scc_1/supplychain_scc_1.so:/opt/lib/supplychain_scc_1.so
-        - /Users/lilione/go/src/github.com/lilione/fabric-test/chaincode/supplychain_scc_2/supplychain_scc_2.so:/opt/lib/supplychain_scc_2.so
-        - /Users/lilione/go/src/github.com/lilione/fabric-test/chaincode/supplychain_scc_3/supplychain_scc_3.so:/opt/lib/supplychain_scc_3.so
-        - /var/run/:/host/var/run/
-        - peer1.org2.example.com-msp:/etc/hyperledger/fabric/msp
-        - peer1.org2.example.com-tls:/etc/hyperledger/fabric/tls
-        - peer1.org2.example.com:/var/hyperledger/production
-        - /Users/lilione/go/src/github.com/lilione/fabric-test/fabric-test/VIN/start_peer.sh:/opt/start_peer.sh
-        - /Users/lilione/go/src/github.com/lilione/HoneyBadgerMPC:/usr/src/HoneyBadgerMPC
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /Users/lilione/go/src/github.com/lilione/fabric/.build/bin/peer:/usr/local/bin/peer
+      - /Users/lilione/go/src/github.com/lilione/fabric-test/chaincode/supplychain_scc_1/supplychain_scc_1.so:/opt/lib/supplychain_scc_1.so
+      - /Users/lilione/go/src/github.com/lilione/fabric-test/chaincode/supplychain_scc_2/supplychain_scc_2.so:/opt/lib/supplychain_scc_2.so
+      - /Users/lilione/go/src/github.com/lilione/fabric-test/chaincode/supplychain_scc_3/supplychain_scc_3.so:/opt/lib/supplychain_scc_3.so
+      - /var/run/:/host/var/run/
+      - peer1.org2.example.com-msp:/etc/hyperledger/fabric/msp
+      - peer1.org2.example.com-tls:/etc/hyperledger/fabric/tls
+      - peer1.org2.example.com:/var/hyperledger/production
+      - /Users/lilione/go/src/github.com/lilione/fabric-test/fabric-test/VIN/start_peer.sh:/opt/start_peer.sh
+      - /Users/lilione/go/src/github.com/lilione/HoneyBadgerMPC:/usr/src/HoneyBadgerMPC
     working_dir: /opt
     command: bash start_peer.sh
     ports:
