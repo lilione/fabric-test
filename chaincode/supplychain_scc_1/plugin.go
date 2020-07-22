@@ -32,7 +32,7 @@ func (s *scc) Invoke(stub shim.ChaincodeStubInterface) peer.Response {
 	fn, args := stub.GetFunctionAndParameters()
 	fmt.Println("scc", fn, args)
 
-	if fn == "handOffItemToNextProvider" {
+	if fn == "handOffItem" {
 		idxInputProvider := args[0]
 		maskedInputProvider := args[1]
 		idxOutputProvider := args[2]
@@ -45,7 +45,7 @@ func (s *scc) Invoke(stub shim.ChaincodeStubInterface) peer.Response {
 		sharePrevOutputProvider := args[9]
 		sharePrevAmt := args[10]
 
-		handOffItemToNextProvider(idxInputProvider, maskedInputProvider, idxOutputProvider, maskedOutputProvider, idxAmt, maskedAmt, itemID, prevSeq, seq, sharePrevOutputProvider, sharePrevAmt)
+		handOffItem(idxInputProvider, maskedInputProvider, idxOutputProvider, maskedOutputProvider, idxAmt, maskedAmt, itemID, prevSeq, seq, sharePrevOutputProvider, sharePrevAmt)
 
 	} else if fn == "dbPut" {
 		key := args[0]

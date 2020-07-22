@@ -7,7 +7,7 @@ echo "building system chaincode"
 cd $GOPATH/src/github.com/lilione/fabric-test/chaincode/supplychain_scc_1
 rm supplychain_scc_1.so || true
 go build -buildmode=plugin
-
+#
 #cd $GOPATH/src/github.com/lilione/fabric-test/chaincode/supplychain_scc_2
 #rm supplychain_scc_2.so
 #go build -buildmode=plugin

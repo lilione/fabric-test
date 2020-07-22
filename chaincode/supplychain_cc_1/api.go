@@ -18,7 +18,7 @@ func toChaincodeArgs(args ...string) [][]byte {
 	return bargs
 }
 
-func handOffItemToNextProvider(
+func handOffItem(
 	stub shim.ChaincodeStubInterface,
 	idxInputProvider string,
 	maskedInputProvider string,
@@ -32,7 +32,7 @@ func handOffItemToNextProvider(
 	sharePrevOutputProvider string,
 	sharePrevAmt string) peer.Response {
 
-	chainCodeArgs := toChaincodeArgs("handOffItemToNextProvider", idxInputProvider, maskedInputProvider, idxOutputProvider, maskedOutputProvider, idxAmt, maskedAmt, itemID, prevSeq, seq, sharePrevOutputProvider, sharePrevAmt)
+	chainCodeArgs := toChaincodeArgs("handOffItem", idxInputProvider, maskedInputProvider, idxOutputProvider, maskedOutputProvider, idxAmt, maskedAmt, itemID, prevSeq, seq, sharePrevOutputProvider, sharePrevAmt)
 	return stub.InvokeChaincode(sccName, chainCodeArgs, channelName)
 
 }
@@ -65,16 +65,6 @@ func calcShare(stub shim.ChaincodeStubInterface, idx string, maskeShare string) 
 
 }
 
-//func getInputmaskIdx(stub shim.ChaincodeStubInterface, num string) peer.Response {
-//	chainCodeArgs := toChaincodeArgs("getInputmaskIdx", num)
-//	return stub.InvokeChaincode(sccName, chainCodeArgs, channelName)
-//}
-//
-//func registerItem(stub shim.ChaincodeStubInterface, idxRegistrant string, maskedRegistrant string, idxAmt string, maskedAmt string) peer.Response {
-//	chainCodeArgs := toChaincodeArgs("registerItem", idxRegistrant, maskedRegistrant, idxAmt, maskedAmt)
-//	return stub.InvokeChaincode(sccName, chainCodeArgs, channelName)
-//}
-//
 //func sourceItem(stub shim.ChaincodeStubInterface, itemID string, seq string) peer.Response {
 //	chainCodeArgs := toChaincodeArgs("sourceItem", itemID, seq)
 //	return stub.InvokeChaincode(sccName, chainCodeArgs, channelName)

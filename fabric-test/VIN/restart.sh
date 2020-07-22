@@ -6,10 +6,12 @@ docker rm $(docker ps -a | grep "client" | awk '{print $1}') || true
 
 docker rmi -f $(docker images | grep 'dev' | awk '{print $1}') || true
 
-# build system chaincode
-echo "building system chaincode"
-cd $GOPATH/src/github.com/lilione/fabric-test/chaincode/supplychain_scc_1
-go build -buildmode=plugin
+rm -rfv $GOPATH/src/github.com/lilione/fabric-test/fabric-test/log/chaincode
+
+## build system chaincode
+#echo "building system chaincode"
+#cd $GOPATH/src/github.com/lilione/fabric-test/chaincode/supplychain_scc_1
+#go build -buildmode=plugin
 #cd $GOPATH/src/github.com/lilione/fabric-test/chaincode/supplychain_scc_2
 #go build -buildmode=plugin
 #cd $GOPATH/src/github.com/lilione/fabric-test/chaincode/supplychain_scc_3

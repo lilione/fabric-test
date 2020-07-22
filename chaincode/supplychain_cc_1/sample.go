@@ -10,8 +10,10 @@ import (
 )
 
 const (
-	stateFinalized = "finalized"
-	stateOngoing   = "ongoing"
+	stateStartGlobal = "startGlobal"
+	stateStartLocal = "startLocal"
+	stateFinalizeGlobal = "finalizeGlobal"
+	stateFinalizeLocal = "finalizeLocal"
 )
 
 type SmartContract struct {
@@ -79,56 +81,61 @@ func (s *SmartContract) Invoke(stub shim.ChaincodeStubInterface) peer.Response {
 
 		return shim.Success([]byte(inputmaskIdx))
 
-	} else if fn == "registerItem" {
+	} else if fn == "registerItemFinalizeGlobal" {
 		idxRegistrant := args[0]
-		maskedRegistrant := args[1]
-		idxAmt := args[2]
-		maskedAmt := args[3]
+		idxAmt := args[1]
 
 		itemID := getCounter(stub,"itemID", 1)
 		seq := getCounter(stub, ("itemShipmentCnt" + itemID), 1)
+
+		var shipmentInstance shipment
+		shipmentInstance.IdxOutputProvider = idxRegistrant
+		shipmentInstance.IdxAmount = idxAmt
+		shipmentInstance.State = stateFinalizeGlobal
+		putShipment(stub, ("itemInfo" + itemID + seq), shipmentInstance)
+
+		return shim.Success([]byte(itemID + " " + seq))
+
+	} else if fn == "registerItemFinalizeLocal" {
+		itemID := args[0]
+		seq := args[1]
+		maskedRegistrant := args[2]
+		maskedAmt := args[3]
+
+		shipmentInstance := getShipment(stub, ("itemInfo" + itemID + seq))
+		if shipmentInstance.State != stateFinalizeGlobal && shipmentInstance.State != stateFinalizeLocal {
+			return shim.Error("registerItemGlobal not finished yet")
+		}
+		shipmentInstance.State = stateFinalizeLocal
+		putShipment(stub, ("itemInfo" + itemID + seq), shipmentInstance)
+		idxRegistrant := shipmentInstance.IdxOutputProvider
+		idxAmt := shipmentInstance.IdxAmount
 
 		shareRegistrant := calcShare(stub, idxRegistrant, maskedRegistrant)
 		shareAmt := calcShare(stub, idxAmt, maskedAmt)
 		dbPut(stub, idxRegistrant, shareRegistrant)
 		dbPut(stub, idxAmt, shareAmt)
 
-		var shipmentInstance shipment
-		shipmentInstance.IdxOutputProvider = idxRegistrant
-		shipmentInstance.IdxAmount = idxAmt
-		shipmentInstance.State = stateFinalized
-		putShipment(stub, ("itemInfo" + itemID + seq), shipmentInstance)
+		return shim.Success([]byte(fmt.Sprintf("Register item %s finished", itemID)))
 
-		return shim.Success([]byte(itemID + " " + seq))
-
-	} else if fn == "handOffItemToNextProvider" {
-		idxInputProvider := args[0]
-		maskedInputProvider := args[1]
-		idxOutputProvider := args[2]
-		maskedOutputProvider := args[3]
-		idxAmt := args[4]
-		maskedAmt := args[5]
-		itemID := args[6]
-		prevSeq := args[7]
+	} else if fn == "handOffItemStartGlobal" {
+		itemID := args[0]
+		prevSeq := args[1]
 
 		prevShipmentInstance := getShipment(stub, ("itemInfo" + itemID + prevSeq))
-		if prevShipmentInstance.State != stateFinalized {
-			shim.Error("Previous shipment not finalized yet")
+		if prevShipmentInstance.State != stateFinalizeLocal {
+			return shim.Error("Previous shipment not recorded yet")
 		}
-		sharePrevOutputProvider := dbGet(stub, prevShipmentInstance.IdxOutputProvider)
-		sharePrevAmt := dbGet(stub, prevShipmentInstance.IdxAmount)
 
 		seq := getCounter(stub, ("itemShipmentCnt" + itemID), 1)
 
 		var shipmentInstance shipment
-		shipmentInstance.State = stateOngoing
+		shipmentInstance.State = stateStartGlobal
 		putShipment(stub, ("itemInfo" + itemID + seq), shipmentInstance)
-
-		handOffItemToNextProvider(stub, idxInputProvider, maskedInputProvider, idxOutputProvider, maskedOutputProvider, idxAmt, maskedAmt, itemID, prevSeq, seq, sharePrevOutputProvider, sharePrevAmt)
 
 		return shim.Success([]byte(seq))
 
-	} else if fn == "handOffItemToNextProviderFinalize" {
+	} else if fn == "handOffItemStartLocal" {
 		idxInputProvider := args[0]
 		maskedInputProvider := args[1]
 		idxOutputProvider := args[2]
@@ -139,6 +146,65 @@ func (s *SmartContract) Invoke(stub shim.ChaincodeStubInterface) peer.Response {
 		prevSeq := args[7]
 		seq := args[8]
 
+		prevShipmentInstance := getShipment(stub, ("itemInfo" + itemID + prevSeq))
+		sharePrevOutputProvider := dbGet(stub, prevShipmentInstance.IdxOutputProvider)
+		sharePrevAmt := dbGet(stub, prevShipmentInstance.IdxAmount)
+
+		shipmentInstance := getShipment(stub, ("itemInfo" + itemID + seq))
+		if shipmentInstance.State != stateStartGlobal && shipmentInstance.State != stateStartLocal {
+			return shim.Error("handOffItemStartGlobal not finished yet")
+		}
+		shipmentInstance.State = stateStartLocal
+		putShipment(stub, ("itemInfo" + itemID + seq), shipmentInstance)
+
+		handOffItem(stub, idxInputProvider, maskedInputProvider, idxOutputProvider, maskedOutputProvider, idxAmt, maskedAmt, itemID, prevSeq, seq, sharePrevOutputProvider, sharePrevAmt)
+
+		return shim.Success([]byte(fmt.Sprintf("handOffItemStartLocal for item %s seq %s succeed", itemID, seq)))
+
+	} else if fn == "handOffItemFinalizeGlobal" {
+		idxInputProvider := args[0]
+		idxOutputProvider := args[1]
+		idxAmt := args[2]
+		itemID := args[3]
+		prevSeq := args[4]
+		seq := args[5]
+
+		shipmentInstance := getShipment(stub, ("itemInfo" + itemID + seq))
+		if shipmentInstance.State != stateStartLocal {
+			return shim.Error("handOffItemStartLocal not finished yet")
+		}
+		shipmentInstance.IdxInputProvider = idxInputProvider
+		shipmentInstance.IdxOutputProvider = idxOutputProvider
+		shipmentInstance.IdxAmount = idxAmt
+		shipmentInstance.Prev = prevSeq
+		shipmentInstance.State = stateFinalizeGlobal
+		putShipment(stub, ("itemInfo" + itemID + seq), shipmentInstance)
+
+		prevShipmentInstance := getShipment(stub, ("itemInfo" + itemID + prevSeq))
+		prevShipmentInstance.Succs = append(prevShipmentInstance.Succs, seq)
+		putShipment(stub, ("itemInfo" + itemID + prevSeq), prevShipmentInstance)
+
+		return shim.Success([]byte(fmt.Sprintf("handOffItemFinalizeGlobal for item %s seq %s succeed", itemID, seq)))
+
+	} else if fn == "handOffItemFinalizeLocal" {
+		maskedInputProvider := args[0]
+		maskedOutputProvider := args[1]
+		maskedAmt := args[2]
+		itemID := args[3]
+		prevSeq := args[4]
+		seq := args[5]
+
+		shipmentInstance := getShipment(stub, ("itemInfo" + itemID + seq))
+		if shipmentInstance.State != stateFinalizeGlobal && shipmentInstance.State != stateFinalizeLocal {
+			return shim.Error("handOffItemFinalizeGlobal not finished yet")
+		}
+		shipmentInstance.State = stateFinalizeLocal
+		putShipment(stub, ("itemInfo" + itemID + seq), shipmentInstance)
+
+		idxInputProvider := shipmentInstance.IdxInputProvider
+		idxOutputProvider := shipmentInstance.IdxOutputProvider
+		idxAmt := shipmentInstance.IdxAmount
+
 		shareInputProvider := calcShare(stub, idxInputProvider, maskedInputProvider)
 		shareOutputProvider := calcShare(stub, idxOutputProvider, maskedOutputProvider)
 		shareAmt := calcShare(stub, idxAmt, maskedAmt)
@@ -146,23 +212,13 @@ func (s *SmartContract) Invoke(stub shim.ChaincodeStubInterface) peer.Response {
 		dbPut(stub, idxOutputProvider, shareOutputProvider)
 		dbPut(stub, idxAmt, shareAmt)
 
-		var shipmentInstance shipment
-		shipmentInstance.IdxInputProvider = idxInputProvider
-		shipmentInstance.IdxOutputProvider = idxOutputProvider
-		shipmentInstance.IdxAmount = idxAmt
-		shipmentInstance.Prev = prevSeq
-		shipmentInstance.State = stateFinalized
-		putShipment(stub, ("itemInfo" + itemID + seq), shipmentInstance)
-
 		prevShipmentInstance := getShipment(stub, ("itemInfo" + itemID + prevSeq))
 		sharePrevAmt := dbGet(stub, prevShipmentInstance.IdxAmount)
 		_sharePrevAmt, _ := strconv.Atoi(sharePrevAmt)
 		_shareAmt, _ := strconv.Atoi(shareAmt)
 		dbPut(stub, prevShipmentInstance.IdxAmount, strconv.Itoa(_sharePrevAmt - _shareAmt))
-		prevShipmentInstance.Succs = append(prevShipmentInstance.Succs, seq)
-		putShipment(stub, ("itemInfo" + itemID + prevSeq), prevShipmentInstance)
 
-		return shim.Success([]byte("Shipment details recorded"))
+		return shim.Success([]byte(fmt.Sprintf("handOffItemFinalizeLocal for item %s seq %s succeed", itemID, seq)))
 
 	}
 	//else if fn == "sourceItem" {

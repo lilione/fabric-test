@@ -7,7 +7,7 @@ import (
 	"os/exec"
 )
 
-func handOffItemToNextProvider(
+func handOffItem(
 	idxInputProvider string,
 	maskedInputProvider string,
 	idxOutputProvider string,
@@ -20,9 +20,9 @@ func handOffItemToNextProvider(
 	sharePrevOutputProvider string,
 	sharePrevAmt string) {
 
-	cmd := exec.Command("python3.7", "-u", "apps/fabric/src/supplychain/v1/hand_off_item_to_next_provider.py", idxInputProvider, maskedInputProvider, idxOutputProvider, maskedOutputProvider, idxAmt, maskedAmt, itemID, prevSeq, seq, sharePrevOutputProvider, sharePrevAmt)
+	cmd := exec.Command("python3.7", "-u", "apps/fabric/src/supplychain/v1/hand_off_item.py", idxInputProvider, maskedInputProvider, idxOutputProvider, maskedOutputProvider, idxAmt, maskedAmt, itemID, prevSeq, seq, sharePrevOutputProvider, sharePrevAmt)
 	cmd.Dir = "/usr/src/HoneyBadgerMPC"
-	//cmd := exec.Command("python3", "apps/fabric/src/supplychain/v1/hand_off_item_to_next_provider.py", idxInputProvider, maskedInputProvider, idxOutputProvider, maskedOutputProvider, idxAmt, maskedAmt, itemID, prevSeq, seq, sharePrevOutputProvider, sharePrevAmt)
+	//cmd := exec.Command("python3", "apps/fabric/src/supplychain/v1/hand_off_item.py", idxInputProvider, maskedInputProvider, idxOutputProvider, maskedOutputProvider, idxAmt, maskedAmt, itemID, prevSeq, seq, sharePrevOutputProvider, sharePrevAmt)
 	//cmd.Dir = "/opt/gopath/src/github.com/lilione/HoneyBadgerMPC"
 	file, err := os.Create("/usr/src/HoneyBadgerMPC/log.txt")
 	//file, err := os.Create("log.txt")
@@ -41,7 +41,7 @@ func handOffItemToNextProvider(
 }
 
 //func main() {
-//	handOffItemToNextProvider(
+//	handOffItem(
 //		"12",
 //		"31735365036769119937719688508119359025704093086069425564197049281662336681743",
 //		"13",

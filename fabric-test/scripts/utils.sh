@@ -296,9 +296,9 @@ parsePeerConnectionParameters() {
     PEER="peer$1.org$2"
     PEERS="$PEERS $PEER"
     PEER_CONN_PARMS="$PEER_CONN_PARMS --peerAddresses $PEER.example.com:7051"
-    echo ${CORE_PEER_TLS_ENABLED}
-    echo ${PWD}
-    echo eval echo "--tlsRootCertFiles \$PEER$1_ORG$2_CA"
+#    echo ${CORE_PEER_TLS_ENABLED}
+#    echo ${PWD}
+#    echo eval echo "--tlsRootCertFiles \$PEER$1_ORG$2_CA"
     if [ -z "$CORE_PEER_TLS_ENABLED" -o "$CORE_PEER_TLS_ENABLED" = "true" ]; then
       TLSINFO=$(eval echo "--tlsRootCertFiles \$PEER$1_ORG$2_CA")
       PEER_CONN_PARMS="$PEER_CONN_PARMS $TLSINFO"
@@ -320,7 +320,7 @@ invoke() {
   # while 'peer chaincode' command can get the orderer endpoint from the
   # peer (if join was successful), let's supply it directly as we know
   # it using the "-o" option
-  echo ${CORE_PEER_TLS_ENABLED}
+#  echo ${CORE_PEER_TLS_ENABLED}
   if [ -z "$CORE_PEER_TLS_ENABLED" -o "$CORE_PEER_TLS_ENABLED" = "false" ]; then
     set -x
     peer chaincode invoke -o orderer.example.com:7050 -C $CHANNEL_NAME -n $CC_NAME $PEER_CONN_PARMS -c $3 >& log/chaincode/$4_peer$1org$2.txt
@@ -354,25 +354,46 @@ invoke() {
   invoke $1 $2 $arg "getInputmaskIdx"
 }
 
-1_registerItem() {
+1_registerItemFinalizeGlobal() {
   CC_NAME=supplychain_cc_1
-  echo "registerItem"
-  arg="{\"Args\":[\"registerItem\",\"$3\",\"$4\",\"$5\",\"$6\"]}"
-  invoke $1 $2 $arg "registerItem"
+  echo "registerItemFinalizeGlobal"
+  arg="{\"Args\":[\"registerItemFinalizeGlobal\",\"$3\",\"$4\"]}"
+  invoke $1 $2 $arg "registerItemFinalizeGlobal"
 }
 
-1_handOffItemToNextProvider() {
+1_registerItemFinalizeLocal() {
   CC_NAME=supplychain_cc_1
-  echo "handOffItemToNextProvider"
-  arg="{\"Args\":[\"handOffItemToNextProvider\",\"$3\",\"$4\",\"$5\",\"$6\",\"$7\",\"$8\",\"$9\",\"${10}\"]}"
-  invoke $1 $2 $arg "handOffItemToNextProvider"
+  echo "registerItemFinalizeLocal"
+  arg="{\"Args\":[\"registerItemFinalizeLocal\",\"$3\",\"$4\",\"$5\",\"$6\"]}"
+  invoke $1 $2 $arg "registerItemFinalizeLocal"
 }
 
-1_handOffItemToNextProviderFinalize() {
+1_handOffItemStartGlobal() {
   CC_NAME=supplychain_cc_1
-  echo "handOffItemToNextProviderFinalize"
-  arg="{\"Args\":[\"handOffItemToNextProviderFinalize\",\"$3\",\"$4\",\"$5\",\"$6\",\"$7\",\"$8\",\"$9\",\"${10}\",\"${11}\"]}"
-  invoke $1 $2 $arg "handOffItemToNextProviderFinalize"
+  echo "handOffItemStartGlobal"
+  arg="{\"Args\":[\"handOffItemStartGlobal\",\"$3\",\"$4\"]}"
+  invoke $1 $2 $arg "handOffItemStartGlobal"
+}
+
+1_handOffItemStartLocal() {
+  CC_NAME=supplychain_cc_1
+  echo "handOffItemStartLocal"
+  arg="{\"Args\":[\"handOffItemStartLocal\",\"$3\",\"$4\",\"$5\",\"$6\",\"$7\",\"$8\",\"$9\",\"${10}\",\"${11}\"]}"
+  invoke $1 $2 $arg "handOffItemStartLocal"
+}
+
+1_handOffItemFinalizeGlobal() {
+  CC_NAME=supplychain_cc_1
+  echo "handOffItemFinalizeGlobal"
+  arg="{\"Args\":[\"handOffItemFinalizeGlobal\",\"$3\",\"$4\",\"$5\",\"$6\",\"$7\",\"$8\"]}"
+  invoke $1 $2 $arg "handOffItemFinalizeGlobal"
+}
+
+1_handOffItemFinalizeLocal() {
+  CC_NAME=supplychain_cc_1
+  echo "handOffItemFinalizeLocal"
+  arg="{\"Args\":[\"handOffItemFinalizeLocal\",\"$3\",\"$4\",\"$5\",\"$6\",\"$7\",\"$8\"]}"
+  invoke $1 $2 $arg "handOffItemFinalizeLocal"
 }
 
 #1_sourceItem() {
