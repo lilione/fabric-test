@@ -28,6 +28,11 @@ type shipment struct {
 	State				string
 }
 
+type inquiry struct {
+	Value 	string
+	State	string
+}
+
 func (s *SmartContract) Init(stub shim.ChaincodeStubInterface) peer.Response {
 	return shim.Success(nil)
 }
@@ -54,6 +59,17 @@ func putShipment(stub shim.ChaincodeStubInterface, key string, shipmentInstance 
 	stub.PutState(key, shipmentJSON)
 }
 
+func getInquiry(stub shim.ChaincodeStubInterface, key string) inquiry {
+	inquiryJSON, _ := stub.GetState(key)
+	var inquiryInstance inquiry
+	json.Unmarshal(inquiryJSON, &inquiryInstance)
+	return inquiryInstance
+}
+
+func putInquiry(stub shim.ChaincodeStubInterface, key string, inquiryInstance inquiry) {
+	inquiryJSON, _ := json.Marshal(&inquiryInstance)
+	stub.PutState(key, inquiryJSON)
+}
 func (s *SmartContract) Invoke(stub shim.ChaincodeStubInterface) peer.Response {
 	fn, args := stub.GetFunctionAndParameters()
 
@@ -64,6 +80,14 @@ func (s *SmartContract) Invoke(stub shim.ChaincodeStubInterface) peer.Response {
 		shipmentJSON, _ := stub.GetState(("itemInfo" + itemID + seq))
 
 		return shim.Success(shipmentJSON)
+
+	} else if fn == "queryInquiry" {
+		itemID := args[0]
+		seq := args[1]
+
+		inquiryJSON, _ := stub.GetState("sourceItem" + itemID + seq)
+
+		return shim.Success(inquiryJSON)
 
 	} else if fn == "getInputmaskIdx" {
 		num, _ := strconv.Atoi(args[0])
@@ -220,17 +244,46 @@ func (s *SmartContract) Invoke(stub shim.ChaincodeStubInterface) peer.Response {
 
 		return shim.Success([]byte(fmt.Sprintf("handOffItemFinalizeLocal for item %s seq %s succeed", itemID, seq)))
 
+	} else if fn == "sourceItemStartLocal" {
+		itemID := args[0]
+		seq := args[1]
+
+		shipmentInstance := getShipment(stub, ("itemInfo" + itemID + seq))
+		if shipmentInstance.State != stateFinalizeLocal {
+			return shim.Error("shipment not recorded yet")
+		}
+
+		shareInputProvider := dbGet(stub, shipmentInstance.IdxInputProvider)
+		if shareInputProvider == "" {
+			var inquiryInstance inquiry
+			inquiryInstance.State = stateFinalizeGlobal
+			putInquiry(stub, ("sourceItem" + itemID + seq), inquiryInstance)
+			return shim.Success([]byte(fmt.Sprintf("reached origin of supply chain for item %s", itemID)))
+		}
+
+		var inquiryInstance inquiry
+		inquiryInstance.State = stateStartLocal
+		putInquiry(stub, ("sourceItem" + itemID + seq), inquiryInstance)
+
+		sourceItem(stub, itemID, seq, shareInputProvider)
+
+		return shim.Success([]byte(fmt.Sprintf("sourceItemStartLocal for item %s seq %s succeed", itemID, seq)))
+	} else if fn == "sourceItemFinalizeGlobal" {
+		itemID := args[0]
+		seq := args[1]
+		inputProvider := args[2]
+
+		inquiryInstance := getInquiry(stub, ("sourceItem" + itemID + seq))
+		if inquiryInstance.State != stateStartLocal {
+			return shim.Error(fmt.Sprintf("sourceItemStartLocal for item %s seq %s not finished yet", itemID, seq))
+		}
+
+		inquiryInstance.Value = inputProvider
+		inquiryInstance.State = stateFinalizeGlobal
+		putInquiry(stub, ("sourceItem" + itemID + seq), inquiryInstance)
+
+		return shim.Success([]byte(fmt.Sprintf("sourceItemFinalizeGlobal for item %s seq %s succeed", itemID, seq)))
 	}
-	//else if fn == "sourceItem" {
-	//	itemID := args[0]
-	//	seq := args[1]
-	//	response := sourceItem(stub, itemID, seq)
-	//	if response.Status == 200 {
-	//		return shim.Success(response.Payload)
-	//	} else {
-	//		return shim.Error(response.Message)
-	//	}
-	//}
 
 	return shim.Error("Invalid Smart Contract function name.")
 }

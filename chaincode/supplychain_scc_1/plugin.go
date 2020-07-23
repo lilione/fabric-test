@@ -32,22 +32,7 @@ func (s *scc) Invoke(stub shim.ChaincodeStubInterface) peer.Response {
 	fn, args := stub.GetFunctionAndParameters()
 	fmt.Println("scc", fn, args)
 
-	if fn == "handOffItem" {
-		idxInputProvider := args[0]
-		maskedInputProvider := args[1]
-		idxOutputProvider := args[2]
-		maskedOutputProvider := args[3]
-		idxAmt := args[4]
-		maskedAmt := args[5]
-		itemID := args[6]
-		prevSeq := args[7]
-		seq := args[8]
-		sharePrevOutputProvider := args[9]
-		sharePrevAmt := args[10]
-
-		handOffItem(idxInputProvider, maskedInputProvider, idxOutputProvider, maskedOutputProvider, idxAmt, maskedAmt, itemID, prevSeq, seq, sharePrevOutputProvider, sharePrevAmt)
-
-	} else if fn == "dbPut" {
+	if fn == "dbPut" {
 		key := args[0]
 		value := args[1]
 
@@ -70,25 +55,29 @@ func (s *scc) Invoke(stub shim.ChaincodeStubInterface) peer.Response {
 
 		return shim.Success([]byte(value))
 
+	} else if fn == "handOffItem" {
+		idxInputProvider := args[0]
+		maskedInputProvider := args[1]
+		idxOutputProvider := args[2]
+		maskedOutputProvider := args[3]
+		idxAmt := args[4]
+		maskedAmt := args[5]
+		itemID := args[6]
+		prevSeq := args[7]
+		seq := args[8]
+		sharePrevOutputProvider := args[9]
+		sharePrevAmt := args[10]
+
+		handOffItem(idxInputProvider, maskedInputProvider, idxOutputProvider, maskedOutputProvider, idxAmt, maskedAmt, itemID, prevSeq, seq, sharePrevOutputProvider, sharePrevAmt)
+
+	} else if fn == "sourceItem" {
+		itemID := args[0]
+		seq := args[1]
+		shareInputProvider := args[2]
+
+		sourceItem(itemID, seq, shareInputProvider)
+
 	}
-	//else if fn == "sourceItem" {
-	//	itemID := args[0]
-	//	seq := args[1]
-	//
-	//	var providers string
-	//	for true {
-	//		shipmentInstance := getShipment(stub, ("itemInfo" + itemID + seq))
-	//		providers += reconstruct(dbGet(shipmentInstance.IdxOutputProvider))
-	//		seq = shipmentInstance.Prev
-	//		if seq == "" {
-	//			break
-	//		} else {
-	//			providers += " "
-	//		}
-	//	}
-	//	return shim.Success([]byte(providers))
-	//
-	//}
 
 	return shim.Error("invalid function name.")
 }

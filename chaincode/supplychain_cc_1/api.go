@@ -2,7 +2,6 @@ package main
 
 import (
 	"github.com/hyperledger/fabric-chaincode-go/shim"
-	"github.com/hyperledger/fabric-protos-go/peer"
 )
 
 const (
@@ -18,29 +17,11 @@ func toChaincodeArgs(args ...string) [][]byte {
 	return bargs
 }
 
-func handOffItem(
-	stub shim.ChaincodeStubInterface,
-	idxInputProvider string,
-	maskedInputProvider string,
-	idxOutputProvider string,
-	maskedOutputProvider string,
-	idxAmt string,
-	maskedAmt string,
-	itemID string,
-	prevSeq string,
-	seq string,
-	sharePrevOutputProvider string,
-	sharePrevAmt string) peer.Response {
-
-	chainCodeArgs := toChaincodeArgs("handOffItem", idxInputProvider, maskedInputProvider, idxOutputProvider, maskedOutputProvider, idxAmt, maskedAmt, itemID, prevSeq, seq, sharePrevOutputProvider, sharePrevAmt)
-	return stub.InvokeChaincode(sccName, chainCodeArgs, channelName)
-
-}
-
 func dbPut(stub shim.ChaincodeStubInterface, key string, value string) {
 
 	chainCodeArgs := toChaincodeArgs("dbPut", key, value)
 	stub.InvokeChaincode(sccName, chainCodeArgs, channelName)
+
 }
 
 func dbGet(stub shim.ChaincodeStubInterface, key string) string {
@@ -65,7 +46,28 @@ func calcShare(stub shim.ChaincodeStubInterface, idx string, maskeShare string) 
 
 }
 
-//func sourceItem(stub shim.ChaincodeStubInterface, itemID string, seq string) peer.Response {
-//	chainCodeArgs := toChaincodeArgs("sourceItem", itemID, seq)
-//	return stub.InvokeChaincode(sccName, chainCodeArgs, channelName)
-//}
+func handOffItem(
+	stub shim.ChaincodeStubInterface,
+	idxInputProvider string,
+	maskedInputProvider string,
+	idxOutputProvider string,
+	maskedOutputProvider string,
+	idxAmt string,
+	maskedAmt string,
+	itemID string,
+	prevSeq string,
+	seq string,
+	sharePrevOutputProvider string,
+	sharePrevAmt string) {
+
+	chainCodeArgs := toChaincodeArgs("handOffItem", idxInputProvider, maskedInputProvider, idxOutputProvider, maskedOutputProvider, idxAmt, maskedAmt, itemID, prevSeq, seq, sharePrevOutputProvider, sharePrevAmt)
+	stub.InvokeChaincode(sccName, chainCodeArgs, channelName)
+
+}
+
+func sourceItem(stub shim.ChaincodeStubInterface, itemID string, seq string, shareInputProvider string) {
+
+	chainCodeArgs := toChaincodeArgs("sourceItem", itemID, seq, shareInputProvider)
+	stub.InvokeChaincode(sccName, chainCodeArgs, channelName)
+
+}
