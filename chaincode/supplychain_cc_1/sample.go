@@ -253,32 +253,35 @@ func (s *SmartContract) Invoke(stub shim.ChaincodeStubInterface) peer.Response {
 			return shim.Error("shipment not recorded yet")
 		}
 
-		shareInputProvider := dbGet(stub, shipmentInstance.IdxInputProvider)
-		if shareInputProvider == "" {
-			var inquiryInstance inquiry
-			inquiryInstance.State = stateFinalizeGlobal
-			putInquiry(stub, ("sourceItem" + itemID + seq), inquiryInstance)
-			return shim.Success([]byte(fmt.Sprintf("reached origin of supply chain for item %s", itemID)))
+		shares := ""
+		for true {
+			shareInputProvider := dbGet(stub, shipmentInstance.IdxInputProvider)
+			shares += shareInputProvider
+			shipmentInstance = getShipment(stub, ("itemInfo" + itemID + shipmentInstance.Prev))
+			if len(shipmentInstance.Prev) == 0 {
+				break
+			}
+			shares += ","
 		}
 
 		var inquiryInstance inquiry
 		inquiryInstance.State = stateStartLocal
 		putInquiry(stub, ("sourceItem" + itemID + seq), inquiryInstance)
 
-		sourceItem(stub, itemID, seq, shareInputProvider)
+		sourceItem(stub, itemID, seq, shares)
 
 		return shim.Success([]byte(fmt.Sprintf("sourceItemStartLocal for item %s seq %s succeed", itemID, seq)))
 	} else if fn == "sourceItemFinalizeGlobal" {
 		itemID := args[0]
 		seq := args[1]
-		inputProvider := args[2]
+		listInputProvider := args[2]
 
 		inquiryInstance := getInquiry(stub, ("sourceItem" + itemID + seq))
 		if inquiryInstance.State != stateStartLocal {
 			return shim.Error(fmt.Sprintf("sourceItemStartLocal for item %s seq %s not finished yet", itemID, seq))
 		}
 
-		inquiryInstance.Value = inputProvider
+		inquiryInstance.Value = listInputProvider
 		inquiryInstance.State = stateFinalizeGlobal
 		putInquiry(stub, ("sourceItem" + itemID + seq), inquiryInstance)
 

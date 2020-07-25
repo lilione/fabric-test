@@ -65,9 +65,9 @@ func handOffItem(
 
 }
 
-func sourceItem(stub shim.ChaincodeStubInterface, itemID string, seq string, shareInputProvider string) {
+func sourceItem(stub shim.ChaincodeStubInterface, itemID string, seq string, shares string) {
 
-	chainCodeArgs := toChaincodeArgs("sourceItem", itemID, seq, shareInputProvider)
+	chainCodeArgs := toChaincodeArgs("sourceItem", itemID, seq, shares)
 	stub.InvokeChaincode(sccName, chainCodeArgs, channelName)
 
 }

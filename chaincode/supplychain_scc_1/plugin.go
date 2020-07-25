@@ -73,9 +73,9 @@ func (s *scc) Invoke(stub shim.ChaincodeStubInterface) peer.Response {
 	} else if fn == "sourceItem" {
 		itemID := args[0]
 		seq := args[1]
-		shareInputProvider := args[2]
+		shares := args[2]
 
-		sourceItem(itemID, seq, shareInputProvider)
+		sourceItem(itemID, seq, shares)
 
 	}
 

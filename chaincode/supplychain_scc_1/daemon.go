@@ -36,9 +36,9 @@ func handOffItem(
 
 }
 
-func sourceItem(itemID string, seq string, shareInputProvider string) {
+func sourceItem(itemID string, seq string, shares string) {
 
-	cmd := exec.Command("python3.7", "-u", "apps/fabric/src/supplychain/v1/source_item.py", itemID, seq, shareInputProvider)
+	cmd := exec.Command("python3.7", "-u", "apps/fabric/src/supplychain/v1/source_item.py", itemID, seq, shares)
 	cmd.Dir = "/usr/src/HoneyBadgerMPC"
 	file, err := os.Create("/usr/src/HoneyBadgerMPC/log.txt")
 	if err != nil {
