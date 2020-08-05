@@ -4,17 +4,17 @@ set -e
 # build system chaincode
 echo "building system chaincode"
 
-cd $GOPATH/src/github.com/lilione/fabric-test/chaincode/supplychain_scc_1
-rm supplychain_scc_1.so || true
-go build -buildmode=plugin
+#cd $GOPATH/src/github.com/lilione/fabric-test/chaincode/supplychain_scc_1
+#rm supplychain_scc_1.so || true
+#go build -buildmode=plugin
 #
 #cd $GOPATH/src/github.com/lilione/fabric-test/chaincode/supplychain_scc_2
 #rm supplychain_scc_2.so
 #go build -buildmode=plugin
 #
-#cd $GOPATH/src/github.com/lilione/fabric-test/chaincode/supplychain_scc_3
-#rm supplychain_scc_3.so
-#go build -buildmode=plugin
+cd $GOPATH/src/github.com/lilione/fabric-test/chaincode/supplychain_scc_3
+rm supplychain_scc_3.so
+go build -buildmode=plugin
 
 ## build fabric peer binary
 #echo "building fabric-peer binary"
@@ -63,7 +63,7 @@ docker exec -it client bash
 
 # python3.7 apps/fabric/src/supplychain/v1/start_client_1.py
 # python3.7 apps/fabric/src/client/start_client_2.py
-# python3.7 apps/fabric/src/client/start_client_3.py
+# python3.7 apps/fabric/src/supplychain/v3/start_client_3.py
 
 #docker run \
 # -v /Users/lilione/go/src/github.com/lilione/HoneyBadgerMPC:/usr/src/HoneyBadgerMPC \

@@ -440,30 +440,58 @@ invoke() {
   invoke $1 $2 $arg "getInputmaskIdx"
 }
 
-3_createTruck() {
+3_createTruckGlobal() {
   CC_NAME=supplychain_cc_3
-  echo "createTruck"
-  arg="{\"Args\":[\"createTruck\"]}"
-  invoke $1 $2 $arg "createTruck"
+  echo "createTruckGlobal"
+  arg="{\"Args\":[\"createTruckGlobal\"]}"
+  invoke $1 $2 $arg "createTruckGlobal"
 }
 
-3_recordShipment() {
+3_recordShipmentStartLocal() {
   CC_NAME=supplychain_cc_3
-  echo "recordShipment"
-  arg="{\"Args\":[\"recordShipment\",\"$3\",\"$4\",\"$5\",\"$6\",\"$7\"]}"
-  invoke $1 $2 $arg "recordShipment"
+  echo "recordShipmentStartLocal"
+  arg="{\"Args\":[\"recordShipmentStartLocal\",\"$3\",\"$4\",\"$5\",\"$6\",\"$7\"]}"
+  invoke $1 $2 $arg "recordShipmentStartLocal"
 }
 
-3_queryPositions() {
+3_recordShipmentFinalizeGlobal() {
   CC_NAME=supplychain_cc_3
-  echo "queryPositions"
-  arg="{\"Args\":[\"queryPositions\",\"$3\",\"$4\",\"$5\",\"$6\",\"$7\"]}"
-  invoke $1 $2 $arg "queryPositions"
+  echo "recordShipmentFinalizeGlobal"
+  arg="{\"Args\":[\"recordShipmentFinalizeGlobal\",\"$3\",\"$4\",\"$5\"]}"
+  invoke $1 $2 $arg "recordShipmentFinalizeGlobal"
 }
 
-3_queryNumber() {
+3_recordShipmentFinalizeLocal() {
   CC_NAME=supplychain_cc_3
-  echo "queryNumber"
-  arg="{\"Args\":[\"queryNumber\",\"$3\",\"$4\",\"$5\",\"$6\",\"$7\"]}"
-  invoke $1 $2 $arg "queryNumber"
+  echo "recordShipmentFinalizeLocal"
+  arg="{\"Args\":[\"recordShipmentFinalizeLocal\",\"$3\",\"$4\",\"$5\",\"$6\"]}"
+  invoke $1 $2 $arg "recordShipmentFinalizeLocal"
+}
+
+3_queryPositionsStartLocal() {
+  CC_NAME=supplychain_cc_3
+  echo "queryPositionsStartLocal"
+  arg="{\"Args\":[\"queryPositionsStartLocal\",\"$3\",\"$4\",\"$5\",\"$6\",\"$7\"]}"
+  invoke $1 $2 $arg "queryPositionsStartLocal"
+}
+
+3_queryPositionsFinalizeGlobal() {
+  CC_NAME=supplychain_cc_3
+  echo "queryPositionsFinalizeGlobal"
+  arg="{\"Args\":[\"queryPositionsFinalizeGlobal\",\"$3\",\"$4\",\"$5\",\"$6\",\"$7\",\"$8\"]}"
+  invoke $1 $2 $arg "queryPositionsFinalizeGlobal"
+}
+
+3_queryNumberStartLocal() {
+  CC_NAME=supplychain_cc_3
+  echo "queryNumberStartLocal"
+  arg="{\"Args\":[\"queryNumberStartLocal\",\"$3\",\"$4\",\"$5\",\"$6\",\"$7\"]}"
+  invoke $1 $2 $arg "queryNumberStartLocal"
+}
+
+3_queryNumberFinalizeGlobal() {
+  CC_NAME=supplychain_cc_3
+  echo "queryNumberFinalizeGlobal"
+  arg="{\"Args\":[\"queryNumberFinalizeGlobal\",\"$3\",\"$4\",\"$5\",\"$6\",\"$7\",\"$8\"]}"
+  invoke $1 $2 $arg "queryNumberFinalizeGlobal"
 }
