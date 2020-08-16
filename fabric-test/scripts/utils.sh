@@ -418,6 +418,14 @@ invoke() {
 }
 
 # for supplychain version 2
+
+2_queryShipment() {
+  CC_NAME=supplychain_cc_2
+  echo "queryShipment"
+  arg="{\"Args\":[\"queryShipment\",\"$3\",\"$4\"]}"
+  invoke $1 $2 $arg "queryShipment"
+}
+
 2_registerItem() {
   CC_NAME=supplychain_cc_2
   echo "2_registerItem"

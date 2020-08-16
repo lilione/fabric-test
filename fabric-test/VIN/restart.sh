@@ -7,13 +7,14 @@ docker rm $(docker ps -a | grep "client" | awk '{print $1}') || true
 docker rmi -f $(docker images | grep 'dev' | awk '{print $1}') || true
 
 rm -rfv $GOPATH/src/github.com/lilione/fabric-test/fabric-test/log/chaincode
+rm $GOPATH/src/github.com/lilione/HoneyBadgerMPC/time.log
 
 # build system chaincode
 echo "building system chaincode"
-cd $GOPATH/src/github.com/lilione/fabric-test/chaincode/supplychain_scc_1
-go build -buildmode=plugin
-#cd $GOPATH/src/github.com/lilione/fabric-test/chaincode/supplychain_scc_2
+#cd $GOPATH/src/github.com/lilione/fabric-test/chaincode/supplychain_scc_1
 #go build -buildmode=plugin
+cd $GOPATH/src/github.com/lilione/fabric-test/chaincode/supplychain_scc_2
+go build -buildmode=plugin
 #cd $GOPATH/src/github.com/lilione/fabric-test/chaincode/supplychain_scc_3
 #go build -buildmode=plugin
 

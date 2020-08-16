@@ -1,9 +1,7 @@
 package main
 
 import (
-	"fmt"
 	"github.com/hyperledger/fabric-chaincode-go/shim"
-	"github.com/hyperledger/fabric-protos-go/peer"
 )
 
 const (
@@ -19,13 +17,11 @@ func toChaincodeArgs(args ...string) [][]byte {
 	return bargs
 }
 
-func registerItem(stub shim.ChaincodeStubInterface, commitRegistrant string) peer.Response {
-	chainCodeArgs := toChaincodeArgs("registerItem", commitRegistrant)
-	return stub.InvokeChaincode(sccName, chainCodeArgs, channelName)
-}
-
-func handOffItemToNextProvider(stub shim.ChaincodeStubInterface, commitInputProvider string, commitOutputProvider string, proof string, itemID string, prevSeq string) peer.Response {
-	chainCodeArgs := toChaincodeArgs("handOffItemToNextProvider", commitInputProvider, commitOutputProvider, proof, itemID, prevSeq)
-	fmt.Println("chainCodeArgs", chainCodeArgs)
-	return stub.InvokeChaincode(sccName, chainCodeArgs, channelName)
+func verifyEq(stub shim.ChaincodeStubInterface, commitPrev string, commitSuc string, proof string) bool {
+	chainCodeArgs := toChaincodeArgs("verifyEq", commitPrev, commitSuc, proof)
+	response := stub.InvokeChaincode(sccName, chainCodeArgs, channelName)
+	if response.Status == 200 {
+		return true
+	}
+	return false
 }

@@ -4,14 +4,29 @@ package main
 import (
 	"bytes"
 	"fmt"
+	"io"
 	"log"
+	"os"
 	"os/exec"
 	"strconv"
 	"strings"
 )
 
-func verify_eq(commitPrev string, commitSuc string, proof string) bool {
-	fmt.Println(commitPrev, commitSuc, proof)
+func writeToFile(filename string, data string) error {
+	file, err := os.OpenFile(filename, os.O_CREATE|os.O_WRONLY|os.O_APPEND, os.ModePerm)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
+	_, err = io.WriteString(file, data)
+	if err != nil {
+		return err
+	}
+	return file.Sync()
+}
+
+func verifyEq(commitPrev string, commitSuc string, proof string) bool {
 	cmd := exec.Command("python3.7", "apps/fabric/src/server/verify_eq.py", commitPrev, commitSuc, proof)
 	cmd.Dir = "/usr/src/HoneyBadgerMPC"
 	var outb, errb bytes.Buffer
@@ -29,6 +44,11 @@ func verify_eq(commitPrev string, commitSuc string, proof string) bool {
 				result, _ := strconv.Atoi(resultParts[1])
 				fmt.Println("The result is ", result)
 				return result > 0
+			}
+		} else if strings.Contains(line, "exe_time") {
+			err := writeToFile("/usr/src/HoneyBadgerMPC/time.log", strings.Split(line, " ")[1] + "\n")
+			if err != nil {
+				log.Fatalf("Write to time.log failed with %s\n", err)
 			}
 		}
 	}
