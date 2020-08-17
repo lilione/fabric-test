@@ -46,21 +46,37 @@ func calcShare(stub shim.ChaincodeStubInterface, idx string, maskeShare string) 
 
 }
 
+//func handOffItem(
+//	stub shim.ChaincodeStubInterface,
+//	idxInputProvider string,
+//	maskedInputProvider string,
+//	idxOutputProvider string,
+//	maskedOutputProvider string,
+//	idxAmt string,
+//	maskedAmt string,
+//	itemID string,
+//	prevSeq string,
+//	seq string,
+//	sharePrevOutputProvider string,
+//	sharePrevAmt string) {
+//
+//	chainCodeArgs := toChaincodeArgs("handOffItem", idxInputProvider, maskedInputProvider, idxOutputProvider, maskedOutputProvider, idxAmt, maskedAmt, itemID, prevSeq, seq, sharePrevOutputProvider, sharePrevAmt)
+//	stub.InvokeChaincode(sccName, chainCodeArgs, channelName)
+//
+//}
+
 func handOffItem(
 	stub shim.ChaincodeStubInterface,
 	idxInputProvider string,
 	maskedInputProvider string,
 	idxOutputProvider string,
 	maskedOutputProvider string,
-	idxAmt string,
-	maskedAmt string,
 	itemID string,
 	prevSeq string,
 	seq string,
-	sharePrevOutputProvider string,
-	sharePrevAmt string) {
+	sharePrevOutputProvider string) {
 
-	chainCodeArgs := toChaincodeArgs("handOffItem", idxInputProvider, maskedInputProvider, idxOutputProvider, maskedOutputProvider, idxAmt, maskedAmt, itemID, prevSeq, seq, sharePrevOutputProvider, sharePrevAmt)
+	chainCodeArgs := toChaincodeArgs("handOffItem", idxInputProvider, maskedInputProvider, idxOutputProvider, maskedOutputProvider, itemID, prevSeq, seq, sharePrevOutputProvider)
 	stub.InvokeChaincode(sccName, chainCodeArgs, channelName)
 
 }

@@ -60,15 +60,19 @@ func (s *scc) Invoke(stub shim.ChaincodeStubInterface) peer.Response {
 		maskedInputProvider := args[1]
 		idxOutputProvider := args[2]
 		maskedOutputProvider := args[3]
-		idxAmt := args[4]
-		maskedAmt := args[5]
-		itemID := args[6]
-		prevSeq := args[7]
-		seq := args[8]
-		sharePrevOutputProvider := args[9]
-		sharePrevAmt := args[10]
+		itemID := args[4]
+		prevSeq := args[5]
+		seq := args[6]
+		sharePrevOutputProvider := args[7]
+		//idxAmt := args[4]
+		//maskedAmt := args[5]
+		//itemID := args[6]
+		//prevSeq := args[7]
+		//seq := args[8]
+		//sharePrevOutputProvider := args[9]
+		//sharePrevAmt := args[10]
 
-		handOffItem(idxInputProvider, maskedInputProvider, idxOutputProvider, maskedOutputProvider, idxAmt, maskedAmt, itemID, prevSeq, seq, sharePrevOutputProvider, sharePrevAmt)
+		handOffItem(idxInputProvider, maskedInputProvider, idxOutputProvider, maskedOutputProvider, itemID, prevSeq, seq, sharePrevOutputProvider)
 
 	} else if fn == "sourceItem" {
 		itemID := args[0]
