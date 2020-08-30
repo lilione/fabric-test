@@ -434,14 +434,14 @@ invoke() {
 2_registerItem() {
   CC_NAME=supplychain_cc_2
   echo "2_registerItem"
-  arg="{\"Args\":[\"registerItem\",\"$3\"]}"
+  arg="{\"Args\":[\"registerItem\",\"$3\",\"$4\"]}"
   invoke $1 $2 $arg "registerItem"
 }
 
 2_handOffItemToNextProvider() {
   CC_NAME=supplychain_cc_2
   echo "2_handOffItemToNextProvider"
-  arg="{\"Args\":[\"handOffItemToNextProvider\",\"$3\",\"$4\",\"$5\",\"$6\",\"$7\"]}"
+  arg="{\"Args\":[\"handOffItemToNextProvider\",\"$3\",\"$4\",\"$5\",\"$6\",\"$7\",\"$8\",\"$9\"]}"
   invoke $1 $2 $arg "handOffItemToNextProvider"
 }
 

@@ -12,10 +12,11 @@ type SmartContract struct {
 }
 
 type shipment struct {
-	CommitInputProvider  string
-	CommitOutputProvider string
-	Prev                 string
-	Succ                 string
+	CommitInputProvider  	string
+	CommitOutputProvider 	string
+	CommitAmt				string
+	Prev             	    string
+	Succ                	string
 }
 
 func getCounter(stub shim.ChaincodeStubInterface, key string, inc int) string {
@@ -57,13 +58,14 @@ func (s *SmartContract) Invoke(stub shim.ChaincodeStubInterface) peer.Response {
 
 	} else if fn == "registerItem" {
 		commitRegistrant := args[0]
+		commitAmt := args[1]
 
 		itemID := getCounter(stub,"itemID", 1)
 		seq := getCounter(stub, ("itemShipmentCnt" + itemID), 1)
 
 		var shipmentInstance shipment
-		shipmentInstance.CommitInputProvider = ""
 		shipmentInstance.CommitOutputProvider = commitRegistrant
+		shipmentInstance.CommitAmt = commitAmt
 		putShipment(stub, ("itemInfo" + itemID + seq), shipmentInstance)
 
 		return shim.Success([]byte(itemID + " " + seq))
@@ -71,14 +73,17 @@ func (s *SmartContract) Invoke(stub shim.ChaincodeStubInterface) peer.Response {
 	} else if fn == "handOffItemToNextProvider" {
 		commitInputProvider := args[0]
 		commitOutputProvider := args[1]
-		proof := args[2]
-		itemID := args[3]
-		prevSeq := args[4]
+		commitAmt := args[2]
+		proofProvider := args[3]
+		proofAmt := args[4]
+		itemID := args[5]
+		prevSeq := args[6]
 
 		prevShipmentInstance := getShipment(stub, ("itemInfo" + itemID + prevSeq))
 		prevCommitOutputProvider := prevShipmentInstance.CommitOutputProvider
+		prevCommitAmt := prevShipmentInstance.CommitAmt
 
-		if verifyEq(stub, prevCommitOutputProvider, commitInputProvider, proof) {
+		if verify(stub, prevCommitOutputProvider, commitInputProvider, proofProvider, prevCommitAmt, commitAmt, proofAmt) {
 			seq := getCounter(stub, ("itemShipmentCnt" + itemID), 1)
 			prevShipmentInstance.Succ = seq
 			putShipment(stub, ("itemInfo" + itemID + prevSeq), prevShipmentInstance)
@@ -86,6 +91,7 @@ func (s *SmartContract) Invoke(stub shim.ChaincodeStubInterface) peer.Response {
 			var shipmentInstance shipment
 			shipmentInstance.CommitInputProvider = commitInputProvider
 			shipmentInstance.CommitOutputProvider = commitOutputProvider
+			shipmentInstance.CommitAmt = commitAmt
 			shipmentInstance.Prev = prevSeq
 			putShipment(stub, ("itemInfo" + itemID + seq), shipmentInstance)
 

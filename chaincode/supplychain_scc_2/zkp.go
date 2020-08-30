@@ -3,7 +3,6 @@ package main
 
 import (
 	"bytes"
-	"fmt"
 	"io"
 	"log"
 	"os"
@@ -26,8 +25,8 @@ func writeToFile(filename string, data string) error {
 	return file.Sync()
 }
 
-func verifyEq(commitPrev string, commitSuc string, proof string) bool {
-	cmd := exec.Command("python3.7", "apps/fabric/src/server/verify_eq.py", commitPrev, commitSuc, proof)
+func verify(prevProvider string, sucProvider string, proofProvider string, prevAmt string, sucAmt string, proofAmt string) bool {
+	cmd := exec.Command("python3.7", "apps/fabric/src/server/verify.py", prevProvider, sucProvider, proofProvider, prevAmt, sucAmt, proofAmt)
 	cmd.Dir = "/usr/src/HoneyBadgerMPC"
 	var outb, errb bytes.Buffer
 	cmd.Stdout = &outb
@@ -42,7 +41,6 @@ func verifyEq(commitPrev string, commitSuc string, proof string) bool {
 			resultParts := strings.Split(line, " ")
 			if len(resultParts) >= 2 {
 				result, _ := strconv.Atoi(resultParts[1])
-				fmt.Println("The result is ", result)
 				return result > 0
 			}
 		} else if strings.Contains(line, "exe_time") {

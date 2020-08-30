@@ -1,8 +1,6 @@
 package main
 
-import (
-	"github.com/hyperledger/fabric-chaincode-go/shim"
-)
+import "github.com/hyperledger/fabric-chaincode-go/shim"
 
 const (
 	channelName = "mychannel"
@@ -17,8 +15,8 @@ func toChaincodeArgs(args ...string) [][]byte {
 	return bargs
 }
 
-func verifyEq(stub shim.ChaincodeStubInterface, commitPrev string, commitSuc string, proof string) bool {
-	chainCodeArgs := toChaincodeArgs("verifyEq", commitPrev, commitSuc, proof)
+func verify(stub shim.ChaincodeStubInterface, prevProvider string, sucProvider string, proofProvider string, prevAmt string, sucAmt string, proofAmt string) bool {
+	chainCodeArgs := toChaincodeArgs("verify", prevProvider, sucProvider, proofProvider, prevAmt, sucAmt, proofAmt)
 	response := stub.InvokeChaincode(sccName, chainCodeArgs, channelName)
 	if response.Status == 200 {
 		return true

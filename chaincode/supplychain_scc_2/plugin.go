@@ -30,12 +30,15 @@ func (s *scc) Init(stub shim.ChaincodeStubInterface) peer.Response {
 func (s *scc) Invoke(stub shim.ChaincodeStubInterface) peer.Response {
 	fn, args := stub.GetFunctionAndParameters()
 
-	if fn == "verifyEq" {
-		commitPrev := args[0]
-		commitSuc := args[1]
-		proof := args[2]
+	if fn == "verify" {
+		prevProvider := args[0]
+		sucProvider := args[1]
+		proofProvider := args[2]
+		prevAmt := args[3]
+		sucAmt := args[4]
+		proofAmt := args[5]
 
-		if verifyEq(commitPrev, commitSuc, proof) {
+		if verify(prevProvider, sucProvider, proofProvider, prevAmt, sucAmt, proofAmt) {
 			return shim.Success(nil)
 		}
 
