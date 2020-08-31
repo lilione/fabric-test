@@ -364,16 +364,14 @@ invoke() {
 1_registerItemFinalizeGlobal() {
   CC_NAME=supplychain_cc_1
   echo "registerItemFinalizeGlobal"
-#  arg="{\"Args\":[\"registerItemFinalizeGlobal\",\"$3\",\"$4\"]}"
-  arg="{\"Args\":[\"registerItemFinalizeGlobal\",\"$3\"]}"
+  arg="{\"Args\":[\"registerItemFinalizeGlobal\",\"$3\",\"$4\"]}"
   invoke $1 $2 $arg "registerItemFinalizeGlobal"
 }
 
 1_registerItemFinalizeLocal() {
   CC_NAME=supplychain_cc_1
   echo "registerItemFinalizeLocal"
-#  arg="{\"Args\":[\"registerItemFinalizeLocal\",\"$3\",\"$4\",\"$5\",\"$6\"]}"
-  arg="{\"Args\":[\"registerItemFinalizeLocal\",\"$3\",\"$4\",\"$5\"]}"
+  arg="{\"Args\":[\"registerItemFinalizeLocal\",\"$3\",\"$4\",\"$5\",\"$6\"]}"
   invoke $1 $2 $arg "registerItemFinalizeLocal"
 }
 
@@ -387,24 +385,21 @@ invoke() {
 1_handOffItemStartLocal() {
   CC_NAME=supplychain_cc_1
   echo "handOffItemStartLocal"
-#  arg="{\"Args\":[\"handOffItemStartLocal\",\"$3\",\"$4\",\"$5\",\"$6\",\"$7\",\"$8\",\"$9\",\"${10}\",\"${11}\"]}"
-  arg="{\"Args\":[\"handOffItemStartLocal\",\"$3\",\"$4\",\"$5\",\"$6\",\"$7\",\"$8\",\"$9\"]}"
+  arg="{\"Args\":[\"handOffItemStartLocal\",\"$3\",\"$4\",\"$5\",\"$6\",\"$7\",\"$8\",\"$9\",\"${10}\",\"${11}\"]}"
   invoke $1 $2 $arg "handOffItemStartLocal"
 }
 
 1_handOffItemFinalizeGlobal() {
   CC_NAME=supplychain_cc_1
   echo "handOffItemFinalizeGlobal"
-#  arg="{\"Args\":[\"handOffItemFinalizeGlobal\",\"$3\",\"$4\",\"$5\",\"$6\",\"$7\",\"$8\"]}"
-  arg="{\"Args\":[\"handOffItemFinalizeGlobal\",\"$3\",\"$4\",\"$5\",\"$6\",\"$7\"]}"
+  arg="{\"Args\":[\"handOffItemFinalizeGlobal\",\"$3\",\"$4\",\"$5\",\"$6\",\"$7\",\"$8\"]}"
   invoke $1 $2 $arg "handOffItemFinalizeGlobal"
 }
 
 1_handOffItemFinalizeLocal() {
   CC_NAME=supplychain_cc_1
   echo "handOffItemFinalizeLocal"
-#  arg="{\"Args\":[\"handOffItemFinalizeLocal\",\"$3\",\"$4\",\"$5\",\"$6\",\"$7\",\"$8\"]}"
-  arg="{\"Args\":[\"handOffItemFinalizeLocal\",\"$3\",\"$4\",\"$5\",\"$6\"]}"
+  arg="{\"Args\":[\"handOffItemFinalizeLocal\",\"$3\",\"$4\",\"$5\",\"$6\",\"$7\"]}"
   invoke $1 $2 $arg "handOffItemFinalizeLocal"
 }
 

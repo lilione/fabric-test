@@ -22,9 +22,9 @@ type SmartContract struct {
 type shipment struct {
 	IdxInputProvider  	string
 	IdxOutputProvider 	string
-	//IdxAmount         	string
+	IdxAmount         	string
 	Prev              	string
-	Succs             	[]string
+	Succs             	string
 	State				string
 }
 
@@ -107,14 +107,14 @@ func (s *SmartContract) Invoke(stub shim.ChaincodeStubInterface) peer.Response {
 
 	} else if fn == "registerItemFinalizeGlobal" {
 		idxRegistrant := args[0]
-		//idxAmt := args[1]
+		idxAmt := args[1]
 
 		itemID := getCounter(stub,"itemID", 1)
 		seq := getCounter(stub, ("itemShipmentCnt" + itemID), 1)
 
 		var shipmentInstance shipment
 		shipmentInstance.IdxOutputProvider = idxRegistrant
-		//shipmentInstance.IdxAmount = idxAmt
+		shipmentInstance.IdxAmount = idxAmt
 		shipmentInstance.State = stateFinalizeGlobal
 		putShipment(stub, ("itemInfo" + itemID + seq), shipmentInstance)
 
@@ -124,7 +124,7 @@ func (s *SmartContract) Invoke(stub shim.ChaincodeStubInterface) peer.Response {
 		itemID := args[0]
 		seq := args[1]
 		maskedRegistrant := args[2]
-		//maskedAmt := args[3]
+		maskedAmt := args[3]
 
 		shipmentInstance := getShipment(stub, ("itemInfo" + itemID + seq))
 		if shipmentInstance.State != stateFinalizeGlobal && shipmentInstance.State != stateFinalizeLocal {
@@ -133,12 +133,12 @@ func (s *SmartContract) Invoke(stub shim.ChaincodeStubInterface) peer.Response {
 		shipmentInstance.State = stateFinalizeLocal
 		putShipment(stub, ("itemInfo" + itemID + seq), shipmentInstance)
 		idxRegistrant := shipmentInstance.IdxOutputProvider
-		//idxAmt := shipmentInstance.IdxAmount
+		idxAmt := shipmentInstance.IdxAmount
 
 		shareRegistrant := calcShare(stub, idxRegistrant, maskedRegistrant)
-		//shareAmt := calcShare(stub, idxAmt, maskedAmt)
+		shareAmt := calcShare(stub, idxAmt, maskedAmt)
 		dbPut(stub, idxRegistrant, shareRegistrant)
-		//dbPut(stub, idxAmt, shareAmt)
+		dbPut(stub, idxAmt, shareAmt)
 
 		return shim.Success([]byte(fmt.Sprintf("Register item %s finished", itemID)))
 
@@ -147,6 +147,9 @@ func (s *SmartContract) Invoke(stub shim.ChaincodeStubInterface) peer.Response {
 		prevSeq := args[1]
 
 		prevShipmentInstance := getShipment(stub, ("itemInfo" + itemID + prevSeq))
+		if prevShipmentInstance.Succs != "" {
+			return shim.Error("Previous shipment already has successors")
+		}
 		if prevShipmentInstance.State != stateFinalizeLocal {
 			return shim.Error("Previous shipment not recorded yet")
 		}
@@ -164,18 +167,15 @@ func (s *SmartContract) Invoke(stub shim.ChaincodeStubInterface) peer.Response {
 		maskedInputProvider := args[1]
 		idxOutputProvider := args[2]
 		maskedOutputProvider := args[3]
-		itemID := args[4]
-		prevSeq := args[5]
-		seq := args[6]
-		//idxAmt := args[4]
-		//maskedAmt := args[5]
-		//itemID := args[6]
-		//prevSeq := args[7]
-		//seq := args[8]
+		idxAmt := args[4]
+		maskedAmt := args[5]
+		itemID := args[6]
+		prevSeq := args[7]
+		seq := args[8]
 
 		prevShipmentInstance := getShipment(stub, ("itemInfo" + itemID + prevSeq))
 		sharePrevOutputProvider := dbGet(stub, prevShipmentInstance.IdxOutputProvider)
-		//sharePrevAmt := dbGet(stub, prevShipmentInstance.IdxAmount)
+		sharePrevAmt := dbGet(stub, prevShipmentInstance.IdxAmount)
 
 		shipmentInstance := getShipment(stub, ("itemInfo" + itemID + seq))
 		if shipmentInstance.State != stateStartGlobal && shipmentInstance.State != stateStartLocal {
@@ -184,21 +184,17 @@ func (s *SmartContract) Invoke(stub shim.ChaincodeStubInterface) peer.Response {
 		shipmentInstance.State = stateStartLocal
 		putShipment(stub, ("itemInfo" + itemID + seq), shipmentInstance)
 
-		//handOffItem(stub, idxInputProvider, maskedInputProvider, idxOutputProvider, maskedOutputProvider, idxAmt, maskedAmt, itemID, prevSeq, seq, sharePrevOutputProvider, sharePrevAmt)
-		handOffItem(stub, idxInputProvider, maskedInputProvider, idxOutputProvider, maskedOutputProvider, itemID, prevSeq, seq, sharePrevOutputProvider)
+		handOffItem(stub, idxInputProvider, maskedInputProvider, idxOutputProvider, maskedOutputProvider, idxAmt, maskedAmt, itemID, prevSeq, seq, sharePrevOutputProvider, sharePrevAmt)
 
 		return shim.Success([]byte(fmt.Sprintf("handOffItemStartLocal for item %s seq %s succeed", itemID, seq)))
 
 	} else if fn == "handOffItemFinalizeGlobal" {
 		idxInputProvider := args[0]
 		idxOutputProvider := args[1]
-		itemID := args[2]
-		prevSeq := args[3]
-		seq := args[4]
-		//idxAmt := args[2]
-		//itemID := args[3]
-		//prevSeq := args[4]
-		//seq := args[5]
+		idxAmt := args[2]
+		itemID := args[3]
+		prevSeq := args[4]
+		seq := args[5]
 
 		shipmentInstance := getShipment(stub, ("itemInfo" + itemID + seq))
 		if shipmentInstance.State != stateStartLocal {
@@ -206,13 +202,13 @@ func (s *SmartContract) Invoke(stub shim.ChaincodeStubInterface) peer.Response {
 		}
 		shipmentInstance.IdxInputProvider = idxInputProvider
 		shipmentInstance.IdxOutputProvider = idxOutputProvider
-		//shipmentInstance.IdxAmount = idxAmt
+		shipmentInstance.IdxAmount = idxAmt
 		shipmentInstance.Prev = prevSeq
 		shipmentInstance.State = stateFinalizeGlobal
 		putShipment(stub, ("itemInfo" + itemID + seq), shipmentInstance)
 
 		prevShipmentInstance := getShipment(stub, ("itemInfo" + itemID + prevSeq))
-		prevShipmentInstance.Succs = append(prevShipmentInstance.Succs, seq)
+		prevShipmentInstance.Succs = seq
 		putShipment(stub, ("itemInfo" + itemID + prevSeq), prevShipmentInstance)
 
 		return shim.Success([]byte(fmt.Sprintf("handOffItemFinalizeGlobal for item %s seq %s succeed", itemID, seq)))
@@ -220,12 +216,9 @@ func (s *SmartContract) Invoke(stub shim.ChaincodeStubInterface) peer.Response {
 	} else if fn == "handOffItemFinalizeLocal" {
 		maskedInputProvider := args[0]
 		maskedOutputProvider := args[1]
-		itemID := args[2]
-		seq := args[3]
-		//maskedAmt := args[2]
-		//itemID := args[3]
-		//prevSeq := args[4]
-		//seq := args[5]
+		maskedAmt := args[2]
+		itemID := args[3]
+		seq := args[4]
 
 		shipmentInstance := getShipment(stub, ("itemInfo" + itemID + seq))
 		if shipmentInstance.State != stateFinalizeGlobal && shipmentInstance.State != stateFinalizeLocal {
@@ -236,20 +229,14 @@ func (s *SmartContract) Invoke(stub shim.ChaincodeStubInterface) peer.Response {
 
 		idxInputProvider := shipmentInstance.IdxInputProvider
 		idxOutputProvider := shipmentInstance.IdxOutputProvider
-		//idxAmt := shipmentInstance.IdxAmount
+		idxAmt := shipmentInstance.IdxAmount
 
 		shareInputProvider := calcShare(stub, idxInputProvider, maskedInputProvider)
 		shareOutputProvider := calcShare(stub, idxOutputProvider, maskedOutputProvider)
-		//shareAmt := calcShare(stub, idxAmt, maskedAmt)
+		shareAmt := calcShare(stub, idxAmt, maskedAmt)
 		dbPut(stub, idxInputProvider, shareInputProvider)
 		dbPut(stub, idxOutputProvider, shareOutputProvider)
-		//dbPut(stub, idxAmt, shareAmt)
-
-		//prevShipmentInstance := getShipment(stub, ("itemInfo" + itemID + prevSeq))
-		//sharePrevAmt := dbGet(stub, prevShipmentInstance.IdxAmount)
-		//_sharePrevAmt, _ := strconv.Atoi(sharePrevAmt)
-		//_shareAmt, _ := strconv.Atoi(shareAmt)
-		//dbPut(stub, prevShipmentInstance.IdxAmount, strconv.Itoa(_sharePrevAmt - _shareAmt))
+		dbPut(stub, idxAmt, shareAmt)
 
 		return shim.Success([]byte(fmt.Sprintf("handOffItemFinalizeLocal for item %s seq %s succeed", itemID, seq)))
 

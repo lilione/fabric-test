@@ -7,7 +7,6 @@ SPDX-License-Identifier: Apache-2.0
 package main
 
 import (
-	"fmt"
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 	"github.com/hyperledger/fabric/protos/peer"
 	//"github.com/hyperledger/fabric-chaincode-go/shim"
@@ -30,7 +29,6 @@ func (s *scc) Init(stub shim.ChaincodeStubInterface) peer.Response {
 // Invoke implements the chaincode shim interface
 func (s *scc) Invoke(stub shim.ChaincodeStubInterface) peer.Response {
 	fn, args := stub.GetFunctionAndParameters()
-	fmt.Println("scc", fn, args)
 
 	if fn == "dbPut" {
 		key := args[0]
@@ -60,19 +58,15 @@ func (s *scc) Invoke(stub shim.ChaincodeStubInterface) peer.Response {
 		maskedInputProvider := args[1]
 		idxOutputProvider := args[2]
 		maskedOutputProvider := args[3]
-		itemID := args[4]
-		prevSeq := args[5]
-		seq := args[6]
-		sharePrevOutputProvider := args[7]
-		//idxAmt := args[4]
-		//maskedAmt := args[5]
-		//itemID := args[6]
-		//prevSeq := args[7]
-		//seq := args[8]
-		//sharePrevOutputProvider := args[9]
-		//sharePrevAmt := args[10]
+		idxAmt := args[4]
+		maskedAmt := args[5]
+		itemID := args[6]
+		prevSeq := args[7]
+		seq := args[8]
+		sharePrevOutputProvider := args[9]
+		sharePrevAmt := args[10]
 
-		handOffItem(idxInputProvider, maskedInputProvider, idxOutputProvider, maskedOutputProvider, itemID, prevSeq, seq, sharePrevOutputProvider)
+		handOffItem(idxInputProvider, maskedInputProvider, idxOutputProvider, maskedOutputProvider, idxAmt, maskedAmt, itemID, prevSeq, seq, sharePrevOutputProvider, sharePrevAmt)
 
 	} else if fn == "sourceItem" {
 		itemID := args[0]

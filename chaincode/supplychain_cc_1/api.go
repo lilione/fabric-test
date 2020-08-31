@@ -35,9 +35,9 @@ func dbGet(stub shim.ChaincodeStubInterface, key string) string {
 
 }
 
-func calcShare(stub shim.ChaincodeStubInterface, idx string, maskeShare string) string {
+func calcShare(stub shim.ChaincodeStubInterface, idx string, maskedShare string) string {
 
-	chainCodeArgs := toChaincodeArgs("calcShare", idx, maskeShare)
+	chainCodeArgs := toChaincodeArgs("calcShare", idx, maskedShare)
 	res := stub.InvokeChaincode(sccName, chainCodeArgs, channelName)
 	if res.Status == 200 {
 		return string(res.Payload)
@@ -46,37 +46,21 @@ func calcShare(stub shim.ChaincodeStubInterface, idx string, maskeShare string) 
 
 }
 
-//func handOffItem(
-//	stub shim.ChaincodeStubInterface,
-//	idxInputProvider string,
-//	maskedInputProvider string,
-//	idxOutputProvider string,
-//	maskedOutputProvider string,
-//	idxAmt string,
-//	maskedAmt string,
-//	itemID string,
-//	prevSeq string,
-//	seq string,
-//	sharePrevOutputProvider string,
-//	sharePrevAmt string) {
-//
-//	chainCodeArgs := toChaincodeArgs("handOffItem", idxInputProvider, maskedInputProvider, idxOutputProvider, maskedOutputProvider, idxAmt, maskedAmt, itemID, prevSeq, seq, sharePrevOutputProvider, sharePrevAmt)
-//	stub.InvokeChaincode(sccName, chainCodeArgs, channelName)
-//
-//}
-
 func handOffItem(
 	stub shim.ChaincodeStubInterface,
 	idxInputProvider string,
 	maskedInputProvider string,
 	idxOutputProvider string,
 	maskedOutputProvider string,
+	idxAmt string,
+	maskedAmt string,
 	itemID string,
 	prevSeq string,
 	seq string,
-	sharePrevOutputProvider string) {
+	sharePrevOutputProvider string,
+	sharePrevAmt string) {
 
-	chainCodeArgs := toChaincodeArgs("handOffItem", idxInputProvider, maskedInputProvider, idxOutputProvider, maskedOutputProvider, itemID, prevSeq, seq, sharePrevOutputProvider)
+	chainCodeArgs := toChaincodeArgs("handOffItem", idxInputProvider, maskedInputProvider, idxOutputProvider, maskedOutputProvider, idxAmt, maskedAmt, itemID, prevSeq, seq, sharePrevOutputProvider, sharePrevAmt)
 	stub.InvokeChaincode(sccName, chainCodeArgs, channelName)
 
 }
