@@ -9,7 +9,7 @@ docker rm -f $(docker ps -aq)
 docker ps -a
 
 # clearup docker volumes
-docker system prune --volumes
+y | docker system prune --volumes
 docker volume ls
 
 # clearup docker images

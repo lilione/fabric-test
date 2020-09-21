@@ -54,27 +54,10 @@ func (s *scc) Invoke(stub shim.ChaincodeStubInterface) peer.Response {
 		return shim.Success([]byte(value))
 
 	} else if fn == "handOffItem" {
-		idxInputProvider := args[0]
-		maskedInputProvider := args[1]
-		idxOutputProvider := args[2]
-		maskedOutputProvider := args[3]
-		idxAmt := args[4]
-		maskedAmt := args[5]
-		itemID := args[6]
-		prevSeq := args[7]
-		seq := args[8]
-		sharePrevOutputProvider := args[9]
-		sharePrevAmt := args[10]
-
-		handOffItem(idxInputProvider, maskedInputProvider, idxOutputProvider, maskedOutputProvider, idxAmt, maskedAmt, itemID, prevSeq, seq, sharePrevOutputProvider, sharePrevAmt)
+		handOffItem(args[0])
 
 	} else if fn == "sourceItem" {
-		itemID := args[0]
-		seq := args[1]
-		shares := args[2]
-
-		sourceItem(itemID, seq, shares)
-
+		sourceItem(args[0])
 	}
 
 	return shim.Error("invalid function name.")

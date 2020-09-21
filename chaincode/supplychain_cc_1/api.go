@@ -18,56 +18,34 @@ func toChaincodeArgs(args ...string) [][]byte {
 }
 
 func dbPut(stub shim.ChaincodeStubInterface, key string, value string) {
-
 	chainCodeArgs := toChaincodeArgs("dbPut", key, value)
 	stub.InvokeChaincode(sccName, chainCodeArgs, channelName)
-
 }
 
 func dbGet(stub shim.ChaincodeStubInterface, key string) string {
-
 	chainCodeArgs := toChaincodeArgs("dbGet", key)
 	res := stub.InvokeChaincode(sccName, chainCodeArgs, channelName)
 	if res.Status == 200 {
 		return string(res.Payload)
 	}
 	return ""
-
 }
 
 func calcShare(stub shim.ChaincodeStubInterface, idx string, maskedShare string) string {
-
 	chainCodeArgs := toChaincodeArgs("calcShare", idx, maskedShare)
 	res := stub.InvokeChaincode(sccName, chainCodeArgs, channelName)
 	if res.Status == 200 {
 		return string(res.Payload)
 	}
 	return ""
-
 }
 
-func handOffItem(
-	stub shim.ChaincodeStubInterface,
-	idxInputProvider string,
-	maskedInputProvider string,
-	idxOutputProvider string,
-	maskedOutputProvider string,
-	idxAmt string,
-	maskedAmt string,
-	itemID string,
-	prevSeq string,
-	seq string,
-	sharePrevOutputProvider string,
-	sharePrevAmt string) {
-
-	chainCodeArgs := toChaincodeArgs("handOffItem", idxInputProvider, maskedInputProvider, idxOutputProvider, maskedOutputProvider, idxAmt, maskedAmt, itemID, prevSeq, seq, sharePrevOutputProvider, sharePrevAmt)
+func handOffItem(stub shim.ChaincodeStubInterface, args string) {
+	chainCodeArgs := toChaincodeArgs("handOffItem", args)
 	stub.InvokeChaincode(sccName, chainCodeArgs, channelName)
-
 }
 
-func sourceItem(stub shim.ChaincodeStubInterface, itemID string, seq string, shares string) {
-
-	chainCodeArgs := toChaincodeArgs("sourceItem", itemID, seq, shares)
+func sourceItem(stub shim.ChaincodeStubInterface, args string) {
+	chainCodeArgs := toChaincodeArgs("sourceItem", args)
 	stub.InvokeChaincode(sccName, chainCodeArgs, channelName)
-
 }

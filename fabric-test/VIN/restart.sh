@@ -7,14 +7,14 @@ docker rm $(docker ps -a | grep "client" | awk '{print $1}') || true
 docker rmi -f $(docker images | grep 'dev' | awk '{print $1}') || true
 
 rm -rfv $GOPATH/src/github.com/lilione/fabric-test/fabric-test/log/chaincode
-rm $GOPATH/src/github.com/lilione/HoneyBadgerMPC/time.log
+rm $GOPATH/src/github.com/lilione/HoneyBadgerMPC/time.log || true
 
-# build system chaincode
-echo "building system chaincode"
+## build system chaincode
+#echo "building system chaincode"
 #cd $GOPATH/src/github.com/lilione/fabric-test/chaincode/supplychain_scc_1
 #go build -buildmode=plugin
-cd $GOPATH/src/github.com/lilione/fabric-test/chaincode/supplychain_scc_2
-go build -buildmode=plugin
+#cd $GOPATH/src/github.com/lilione/fabric-test/chaincode/supplychain_scc_2
+#go build -buildmode=plugin
 #cd $GOPATH/src/github.com/lilione/fabric-test/chaincode/supplychain_scc_3
 #go build -buildmode=plugin
 
@@ -44,10 +44,5 @@ docker run -d \
  -v /var/run/docker.sock:/var/run/docker.sock \
  --name client -it hyperledger/fabric-peer:latest
 docker network connect net_byfn client
-docker exec -it client bash
 
-# docker logs peer0.org1.example.com
-# docker logs peer0.org2.example.com
-# docker logs peer1.org1.example.com
-# docker logs peer1.org2.example.com
-# docker logs cli
+docker exec -it client bash

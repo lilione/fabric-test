@@ -56,10 +56,17 @@ docker network connect net_byfn client
 docker exec -it client bash
 
 # docker exec -it peer0.org1.example.com bash
-# docker exec -it peer1.org1.example.com bash
 # docker exec -it peer0.org2.example.com bash
+# docker exec -it peer1.org1.example.com bash
 # docker exec -it peer1.org2.example.com bash
 # docker exec -it cli bash
+# docker exec -it setup-honeybadger bash
+
+# docker logs peer0.org1.example.com
+# docker logs peer0.org2.example.com
+# docker logs peer1.org1.example.com
+# docker logs peer1.org2.example.com
+# docker logs cli
 
 # python3.7 apps/fabric/src/supplychain/v1/start_client_1.py
 # python3.7 apps/fabric/src/supplychain/v2/start_client_2.py

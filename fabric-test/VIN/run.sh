@@ -21,6 +21,7 @@ docker run -it \
 	-v /var/run/docker.sock:/var/run/docker.sock \
 	-v ${PWD}/setup.sh:/opt/setup.sh \
 	-v ${PWD}/restart.sh:/opt/restart.sh \
+	-v ${PWD}/rerun.sh:/opt/rerun.sh \
 	-v $GOPATH/src/github.com/lilione/HoneyBadgerMPC:/opt/gopath/src/github.com/lilione/HoneyBadgerMPC \
   -v $GOPATH/src/github.com/lilione/fabric-test:/opt/gopath/src/github.com/lilione/fabric-test \
   -v $GOPATH/src/github.com/lilione/fabric:/opt/gopath/src/github.com/hyperledger/fabric \

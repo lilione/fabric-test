@@ -361,60 +361,53 @@ invoke() {
   invoke $1 $2 $arg "getInputmaskIdx"
 }
 
-1_registerItemFinalizeGlobal() {
+1_registerItemGlobal() {
   CC_NAME=supplychain_cc_1
-  echo "registerItemFinalizeGlobal"
-  arg="{\"Args\":[\"registerItemFinalizeGlobal\",\"$3\",\"$4\"]}"
-  invoke $1 $2 $arg "registerItemFinalizeGlobal"
+  echo "registerItemGlobal"
+  arg="{\"Args\":[\"registerItemGlobal\",\"$3\"]}"
+  invoke $1 $2 $arg "registerItemGlobal"
 }
 
-1_registerItemFinalizeLocal() {
+1_registerItemLocal() {
   CC_NAME=supplychain_cc_1
-  echo "registerItemFinalizeLocal"
-  arg="{\"Args\":[\"registerItemFinalizeLocal\",\"$3\",\"$4\",\"$5\",\"$6\"]}"
-  invoke $1 $2 $arg "registerItemFinalizeLocal"
+  echo "registerItemLocal"
+  arg="{\"Args\":[\"registerItemLocal\",\"$3\"]}"
+  invoke $1 $2 $arg "registerItemLocal"
 }
 
-1_handOffItemStartGlobal() {
+1_handOffItemClientGlobal() {
   CC_NAME=supplychain_cc_1
-  echo "handOffItemStartGlobal"
-  arg="{\"Args\":[\"handOffItemStartGlobal\",\"$3\",\"$4\"]}"
-  invoke $1 $2 $arg "handOffItemStartGlobal"
+  echo "handOffItemClientGlobal"
+  arg="{\"Args\":[\"handOffItemClientGlobal\",\"$3\"]}"
+  invoke $1 $2 $arg "handOffItemClientGlobal"
 }
 
-1_handOffItemStartLocal() {
+1_handOffItemClientLocal() {
   CC_NAME=supplychain_cc_1
-  echo "handOffItemStartLocal"
-  arg="{\"Args\":[\"handOffItemStartLocal\",\"$3\",\"$4\",\"$5\",\"$6\",\"$7\",\"$8\",\"$9\",\"${10}\",\"${11}\"]}"
-  invoke $1 $2 $arg "handOffItemStartLocal"
+  echo "handOffItemClientLocal"
+  arg="{\"Args\":[\"handOffItemClientLocal\",\"$3\"]}"
+  invoke $1 $2 $arg "handOffItemClientLocal"
 }
 
-1_handOffItemFinalizeGlobal() {
+1_handOffItemServerGlobal() {
   CC_NAME=supplychain_cc_1
-  echo "handOffItemFinalizeGlobal"
-  arg="{\"Args\":[\"handOffItemFinalizeGlobal\",\"$3\",\"$4\",\"$5\",\"$6\",\"$7\",\"$8\"]}"
-  invoke $1 $2 $arg "handOffItemFinalizeGlobal"
+  echo "handOffItemServerGlobal"
+  arg="{\"Args\":[\"handOffItemServerGlobal\",\"$3\"]}"
+  invoke $1 $2 $arg "handOffItemServerGlobal"
 }
 
-1_handOffItemFinalizeLocal() {
+1_sourceItemClientLocal() {
   CC_NAME=supplychain_cc_1
-  echo "handOffItemFinalizeLocal"
-  arg="{\"Args\":[\"handOffItemFinalizeLocal\",\"$3\",\"$4\",\"$5\",\"$6\",\"$7\"]}"
-  invoke $1 $2 $arg "handOffItemFinalizeLocal"
+  echo "sourceItemClientLocal"
+  arg="{\"Args\":[\"sourceItemClientLocal\",\"$3\"]}"
+  invoke $1 $2 $arg "sourceItemClientLocal"
 }
 
-1_sourceItemStartLocal() {
+1_sourceItemServerGlobal() {
   CC_NAME=supplychain_cc_1
-  echo "sourceItemStartLocal"
-  arg="{\"Args\":[\"sourceItemStartLocal\",\"$3\",\"$4\"]}"
-  invoke $1 $2 $arg "sourceItemStartLocal"
-}
-
-1_sourceItemFinalizeGlobal() {
-  CC_NAME=supplychain_cc_1
-  echo "sourceItemFinalizeGlobal"
-  arg="{\"Args\":[\"sourceItemFinalizeGlobal\",\"$3\",\"$4\",\"$5\"]}"
-  invoke $1 $2 $arg "sourceItemFinalizeGlobal"
+  echo "sourceItemServerGlobal"
+  arg="{\"Args\":[\"sourceItemServerGlobal\",\"$3\"]}"
+  invoke $1 $2 $arg "sourceItemServerGlobal"
 }
 
 # for supplychain version 2

@@ -4,16 +4,19 @@ import (
 	"encoding/json"
 	"fmt"
 	"strconv"
+	"strings"
 
 	"github.com/hyperledger/fabric-chaincode-go/shim"
 	"github.com/hyperledger/fabric-protos-go/peer"
 )
 
 const (
-	stateStartGlobal = "startGlobal"
-	stateStartLocal = "startLocal"
-	stateFinalizeGlobal = "finalizeGlobal"
-	stateFinalizeLocal = "finalizeLocal"
+	//stateStartGlobal = "startGlobal"
+	//stateStartLocal = "startLocal"
+	//stateFinalizeGlobal = "finalizeGlobal"
+	//stateFinalizeLocal = "finalizeLocal"
+	READY = "READY"
+	SETTLE = "SETTLE"
 )
 
 type SmartContract struct {
@@ -59,6 +62,10 @@ func putShipment(stub shim.ChaincodeStubInterface, key string, shipmentInstance 
 	stub.PutState(key, shipmentJSON)
 }
 
+func delShipment(stub shim.ChaincodeStubInterface, key string) {
+	stub.DelState(key)
+}
+
 func getInquiry(stub shim.ChaincodeStubInterface, key string) inquiry {
 	inquiryJSON, _ := stub.GetState(key)
 	var inquiryInstance inquiry
@@ -85,7 +92,7 @@ func (s *SmartContract) Invoke(stub shim.ChaincodeStubInterface) peer.Response {
 		itemID := args[0]
 		seq := args[1]
 
-		inquiryJSON, _ := stub.GetState("sourceItem" + itemID + seq)
+		inquiryJSON, _ := stub.GetState(("sourceItem" + itemID + seq))
 
 		return shim.Success(inquiryJSON)
 
@@ -93,7 +100,7 @@ func (s *SmartContract) Invoke(stub shim.ChaincodeStubInterface) peer.Response {
 		num, _ := strconv.Atoi(args[0])
 
 		var inputmaskIdx string
-		value, _ := strconv.Atoi(getCounter(stub,"inputmaskCnt", num))
+		value, _ := strconv.Atoi(getCounter(stub, "inputmaskCnt", num))
 		for num > 0 {
 			inputmaskIdx += strconv.Itoa(value)
 			value += 1
@@ -105,183 +112,264 @@ func (s *SmartContract) Invoke(stub shim.ChaincodeStubInterface) peer.Response {
 
 		return shim.Success([]byte(inputmaskIdx))
 
-	} else if fn == "registerItemFinalizeGlobal" {
-		idxRegistrant := args[0]
-		idxAmt := args[1]
-
-		itemID := getCounter(stub,"itemID", 1)
-		seq := getCounter(stub, ("itemShipmentCnt" + itemID), 1)
-
-		var shipmentInstance shipment
-		shipmentInstance.IdxOutputProvider = idxRegistrant
-		shipmentInstance.IdxAmount = idxAmt
-		shipmentInstance.State = stateFinalizeGlobal
-		putShipment(stub, ("itemInfo" + itemID + seq), shipmentInstance)
-
-		return shim.Success([]byte(itemID + " " + seq))
-
-	} else if fn == "registerItemFinalizeLocal" {
-		itemID := args[0]
-		seq := args[1]
-		maskedRegistrant := args[2]
-		maskedAmt := args[3]
-
-		shipmentInstance := getShipment(stub, ("itemInfo" + itemID + seq))
-		if shipmentInstance.State != stateFinalizeGlobal && shipmentInstance.State != stateFinalizeLocal {
-			return shim.Error("registerItemGlobal not finished yet")
-		}
-		shipmentInstance.State = stateFinalizeLocal
-		putShipment(stub, ("itemInfo" + itemID + seq), shipmentInstance)
-		idxRegistrant := shipmentInstance.IdxOutputProvider
-		idxAmt := shipmentInstance.IdxAmount
-
-		shareRegistrant := calcShare(stub, idxRegistrant, maskedRegistrant)
-		shareAmt := calcShare(stub, idxAmt, maskedAmt)
-		dbPut(stub, idxRegistrant, shareRegistrant)
-		dbPut(stub, idxAmt, shareAmt)
-
-		return shim.Success([]byte(fmt.Sprintf("Register item %s finished", itemID)))
-
-	} else if fn == "handOffItemStartGlobal" {
-		itemID := args[0]
-		prevSeq := args[1]
-
-		prevShipmentInstance := getShipment(stub, ("itemInfo" + itemID + prevSeq))
-		if prevShipmentInstance.Succs != "" {
-			return shim.Error("Previous shipment already has successors")
-		}
-		if prevShipmentInstance.State != stateFinalizeLocal {
-			return shim.Error("Previous shipment not recorded yet")
+	} else if fn == "registerItemGlobal" {
+		data := strings.Split(args[0], ",")
+		paraNum := 2
+		if len(data) % paraNum != 0 {
+			shim.Error("Invalid number of arguments")
 		}
 
-		seq := getCounter(stub, ("itemShipmentCnt" + itemID), 1)
+		itemNum := len(data) / paraNum
+		itemID, _ := strconv.Atoi(getCounter(stub, "itemID", itemNum))
+		ret := ""
+		for i := 0; i < itemNum; i++ {
+			idxRegistrant := data[paraNum*i]
+			idxAmt := data[paraNum*i+1]
 
-		var shipmentInstance shipment
-		shipmentInstance.State = stateStartGlobal
-		putShipment(stub, ("itemInfo" + itemID + seq), shipmentInstance)
+			strItemID := strconv.Itoa(itemID)
+			seq := getCounter(stub, ("itemShipmentCnt" + strItemID), 1)
 
-		return shim.Success([]byte(seq))
+			var shipmentInstance shipment
+			shipmentInstance.IdxOutputProvider = idxRegistrant
+			shipmentInstance.IdxAmount = idxAmt
+			shipmentInstance.State = SETTLE
+			putShipment(stub, ("itemInfo" + strItemID + seq), shipmentInstance)
 
-	} else if fn == "handOffItemStartLocal" {
-		idxInputProvider := args[0]
-		maskedInputProvider := args[1]
-		idxOutputProvider := args[2]
-		maskedOutputProvider := args[3]
-		idxAmt := args[4]
-		maskedAmt := args[5]
-		itemID := args[6]
-		prevSeq := args[7]
-		seq := args[8]
-
-		prevShipmentInstance := getShipment(stub, ("itemInfo" + itemID + prevSeq))
-		sharePrevOutputProvider := dbGet(stub, prevShipmentInstance.IdxOutputProvider)
-		sharePrevAmt := dbGet(stub, prevShipmentInstance.IdxAmount)
-
-		shipmentInstance := getShipment(stub, ("itemInfo" + itemID + seq))
-		if shipmentInstance.State != stateStartGlobal && shipmentInstance.State != stateStartLocal {
-			return shim.Error("handOffItemStartGlobal not finished yet")
-		}
-		shipmentInstance.State = stateStartLocal
-		putShipment(stub, ("itemInfo" + itemID + seq), shipmentInstance)
-
-		handOffItem(stub, idxInputProvider, maskedInputProvider, idxOutputProvider, maskedOutputProvider, idxAmt, maskedAmt, itemID, prevSeq, seq, sharePrevOutputProvider, sharePrevAmt)
-
-		return shim.Success([]byte(fmt.Sprintf("handOffItemStartLocal for item %s seq %s succeed", itemID, seq)))
-
-	} else if fn == "handOffItemFinalizeGlobal" {
-		idxInputProvider := args[0]
-		idxOutputProvider := args[1]
-		idxAmt := args[2]
-		itemID := args[3]
-		prevSeq := args[4]
-		seq := args[5]
-
-		shipmentInstance := getShipment(stub, ("itemInfo" + itemID + seq))
-		if shipmentInstance.State != stateStartLocal {
-			return shim.Error("handOffItemStartLocal not finished yet")
-		}
-		shipmentInstance.IdxInputProvider = idxInputProvider
-		shipmentInstance.IdxOutputProvider = idxOutputProvider
-		shipmentInstance.IdxAmount = idxAmt
-		shipmentInstance.Prev = prevSeq
-		shipmentInstance.State = stateFinalizeGlobal
-		putShipment(stub, ("itemInfo" + itemID + seq), shipmentInstance)
-
-		prevShipmentInstance := getShipment(stub, ("itemInfo" + itemID + prevSeq))
-		prevShipmentInstance.Succs = seq
-		putShipment(stub, ("itemInfo" + itemID + prevSeq), prevShipmentInstance)
-
-		return shim.Success([]byte(fmt.Sprintf("handOffItemFinalizeGlobal for item %s seq %s succeed", itemID, seq)))
-
-	} else if fn == "handOffItemFinalizeLocal" {
-		maskedInputProvider := args[0]
-		maskedOutputProvider := args[1]
-		maskedAmt := args[2]
-		itemID := args[3]
-		seq := args[4]
-
-		shipmentInstance := getShipment(stub, ("itemInfo" + itemID + seq))
-		if shipmentInstance.State != stateFinalizeGlobal && shipmentInstance.State != stateFinalizeLocal {
-			return shim.Error("handOffItemFinalizeGlobal not finished yet")
-		}
-		shipmentInstance.State = stateFinalizeLocal
-		putShipment(stub, ("itemInfo" + itemID + seq), shipmentInstance)
-
-		idxInputProvider := shipmentInstance.IdxInputProvider
-		idxOutputProvider := shipmentInstance.IdxOutputProvider
-		idxAmt := shipmentInstance.IdxAmount
-
-		shareInputProvider := calcShare(stub, idxInputProvider, maskedInputProvider)
-		shareOutputProvider := calcShare(stub, idxOutputProvider, maskedOutputProvider)
-		shareAmt := calcShare(stub, idxAmt, maskedAmt)
-		dbPut(stub, idxInputProvider, shareInputProvider)
-		dbPut(stub, idxOutputProvider, shareOutputProvider)
-		dbPut(stub, idxAmt, shareAmt)
-
-		return shim.Success([]byte(fmt.Sprintf("handOffItemFinalizeLocal for item %s seq %s succeed", itemID, seq)))
-
-	} else if fn == "sourceItemStartLocal" {
-		itemID := args[0]
-		seq := args[1]
-
-		shipmentInstance := getShipment(stub, ("itemInfo" + itemID + seq))
-		if shipmentInstance.State != stateFinalizeLocal {
-			return shim.Error("shipment not recorded yet")
-		}
-
-		shares := ""
-		for true {
-			shareInputProvider := dbGet(stub, shipmentInstance.IdxInputProvider)
-			shares += shareInputProvider
-			shipmentInstance = getShipment(stub, ("itemInfo" + itemID + shipmentInstance.Prev))
-			if len(shipmentInstance.Prev) == 0 {
-				break
+			if i > 0 {
+				ret += " "
 			}
-			shares += ","
+			ret += fmt.Sprintf("%s %s", strItemID, seq)
+
+			itemID += 1
 		}
 
-		var inquiryInstance inquiry
-		inquiryInstance.State = stateStartLocal
-		putInquiry(stub, ("sourceItem" + itemID + seq), inquiryInstance)
+		return shim.Success([]byte(ret))
 
-		sourceItem(stub, itemID, seq, shares)
-
-		return shim.Success([]byte(fmt.Sprintf("sourceItemStartLocal for item %s seq %s succeed", itemID, seq)))
-	} else if fn == "sourceItemFinalizeGlobal" {
-		itemID := args[0]
-		seq := args[1]
-		listInputProvider := args[2]
-
-		inquiryInstance := getInquiry(stub, ("sourceItem" + itemID + seq))
-		if inquiryInstance.State != stateStartLocal {
-			return shim.Error(fmt.Sprintf("sourceItemStartLocal for item %s seq %s not finished yet", itemID, seq))
+	} else if fn == "registerItemLocal" {
+		data := strings.Split(args[0], ",")
+		paraNum := 4
+		if len(data) % paraNum != 0 {
+			shim.Error("Invalid number of arguments")
 		}
 
-		inquiryInstance.Value = listInputProvider
-		inquiryInstance.State = stateFinalizeGlobal
-		putInquiry(stub, ("sourceItem" + itemID + seq), inquiryInstance)
+		itemNum := len(data) / paraNum
+		for i := 0; i < itemNum; i++ {
+			itemID := data[paraNum*i]
+			seq := data[paraNum*i+1]
+			maskedRegistrant := data[paraNum*i+2]
+			maskedAmt := data[paraNum*i+3]
 
-		return shim.Success([]byte(fmt.Sprintf("sourceItemFinalizeGlobal for item %s seq %s succeed", itemID, seq)))
+			shipmentInstance := getShipment(stub, ("itemInfo" + itemID + seq))
+			if shipmentInstance.State != SETTLE {
+				return shim.Error("Shipment hasn't settled yet")
+			}
+
+			idxRegistrant := shipmentInstance.IdxOutputProvider
+			idxAmt := shipmentInstance.IdxAmount
+
+			shareRegistrant := calcShare(stub, idxRegistrant, maskedRegistrant)
+			shareAmt := calcShare(stub, idxAmt, maskedAmt)
+			dbPut(stub, idxRegistrant, shareRegistrant)
+			dbPut(stub, idxAmt, shareAmt)
+		}
+
+		return shim.Success([]byte("registerItemLocal finished"))
+
+	} else if fn == "handOffItemClientGlobal" {
+		data := strings.Split(args[0], ",")
+		paraNum := 5
+		if len(data)%paraNum != 0 {
+			shim.Error("Invalid number of arguments")
+		}
+
+		set := make(map[string]bool)
+
+		itemNum := len(data) / paraNum
+		ret := ""
+		for i := 0; i < itemNum; i++ {
+			itemID := data[paraNum*i]
+			prevSeq := data[paraNum*i+1]
+			idxInputProvider := data[paraNum*i+2]
+			idxOutputProvider := data[paraNum*i+3]
+			idxAmt := data[paraNum*i+4]
+
+			_, ok := set[itemID]
+			if ok {
+				return shim.Error(fmt.Sprintf("Repetitive itemID %s", itemID))
+			}
+			set[itemID] = true
+
+			prevKey := "itemInfo" + itemID + prevSeq
+			prevShipmentInstance := getShipment(stub, prevKey)
+			if prevShipmentInstance.State != SETTLE {
+				return shim.Error("Previous shipment hasn't settled yet")
+			}
+			if prevShipmentInstance.Succs != "" {
+				return shim.Error("Previous shipment already has a successor")
+			}
+
+			seq := getCounter(stub, ("itemShipmentCnt" + itemID), 1)
+			if i > 0 {
+				ret += " "
+			}
+			ret += seq
+
+			prevShipmentInstance.Succs = seq
+			putShipment(stub, prevKey, prevShipmentInstance)
+
+			var shipmentInstance shipment
+			shipmentInstance.IdxInputProvider = idxInputProvider
+			shipmentInstance.IdxOutputProvider = idxOutputProvider
+			shipmentInstance.IdxAmount = idxAmt
+			shipmentInstance.Prev = prevSeq
+			shipmentInstance.State = READY
+			putShipment(stub, ("itemInfo" + itemID + seq), shipmentInstance)
+		}
+
+		return shim.Success([]byte(ret))
+
+	} else if fn == "handOffItemClientLocal" {
+		data := strings.Split(args[0], ",")
+		paraNum := 5
+		if len(data)%paraNum != 0 {
+			shim.Error("Invalid number of arguments")
+		}
+
+		itemNum := len(data) / paraNum
+		args := ""
+		for i := 0; i < itemNum; i++ {
+			itemID := data[paraNum*i]
+			seq := data[paraNum*i+1]
+			maskedInputProvider := data[paraNum*i+2]
+			maskedOutputProvider := data[paraNum*i+3]
+			maskedAmt := data[paraNum*i+4]
+
+			shipmentInstance := getShipment(stub, ("itemInfo" + itemID + seq))
+			if shipmentInstance.State != READY {
+				return shim.Error("Shipment is not ready")
+			}
+			idxInputProvider := shipmentInstance.IdxInputProvider
+			idxOutputProvider := shipmentInstance.IdxOutputProvider
+			idxAmt := shipmentInstance.IdxAmount
+			shareInputProvider := calcShare(stub, idxInputProvider, maskedInputProvider)
+			shareOutputProvider := calcShare(stub, idxOutputProvider, maskedOutputProvider)
+			shareAmt := calcShare(stub, idxAmt, maskedAmt)
+			dbPut(stub, idxInputProvider, shareInputProvider)
+			dbPut(stub, idxOutputProvider, shareOutputProvider)
+			dbPut(stub, idxAmt, shareAmt)
+
+			prevSeq := shipmentInstance.Prev
+			prevShipmentInstance := getShipment(stub, ("itemInfo" + itemID + prevSeq))
+			sharePrevOutputProvider := dbGet(stub, prevShipmentInstance.IdxOutputProvider)
+			sharePrevAmt := dbGet(stub, prevShipmentInstance.IdxAmount)
+
+			if i > 0 {
+				args += " "
+			}
+			args += fmt.Sprintf("%s %s %s %s %s %s", itemID, seq, shareInputProvider, sharePrevOutputProvider, shareAmt, sharePrevAmt)
+		}
+
+		handOffItem(stub, args)
+
+		return shim.Success([]byte("handOffItemClientLocal finished"))
+
+	} else if fn == "handOffItemServerGlobal" {
+		data := strings.Split(args[0], ",")
+		paraNum := 3
+		if len(data)%paraNum != 0 {
+			shim.Error("Invalid number of arguments")
+		}
+
+		itemNum := len(data) / paraNum
+		for i := 0; i < itemNum; i++ {
+			itemID := data[paraNum*i]
+			seq := data[paraNum*i+1]
+			result := data[paraNum*i+2]
+
+			key := "itemInfo" + itemID + seq
+			shipmentInstance := getShipment(stub, key)
+			if result == "pass" {
+				shipmentInstance.State = SETTLE
+				putShipment(stub, key, shipmentInstance)
+			} else if result == "fail" {
+				prevSeq := shipmentInstance.Prev
+				delShipment(stub, key)
+
+				prevKey := "itemInfo" + itemID + prevSeq
+				prevShipmentInstance := getShipment(stub, prevKey)
+				prevShipmentInstance.Succs = ""
+				putShipment(stub, prevSeq, prevShipmentInstance)
+			}
+		}
+
+		return shim.Success([]byte("handOffItemServerGlobal finished"))
+
+	} else if fn == "sourceItemClientLocal" {
+		data := strings.Split(args[0], ",")
+		paraNum := 2
+		if len(data)%paraNum != 0 {
+			shim.Error("Invalid number of arguments")
+		}
+
+		itemNum := len(data) / paraNum
+		args := ""
+		for i := 0; i < itemNum; i++ {
+			itemID := data[paraNum*i]
+			seq := data[paraNum*i+1]
+
+			inquiryInstance := getInquiry(stub, ("sourceItem" + itemID + seq))
+			if inquiryInstance.State == SETTLE {
+				continue
+			}
+
+			if i > 0 {
+				args += " "
+			}
+			args += fmt.Sprintf("%s %s ", itemID, seq)
+
+			shares := ""
+			if seq != "0" {
+				for true {
+					shipmentInstance := getShipment(stub, ("itemInfo" + itemID + seq))
+					shareInputProvider := dbGet(stub, shipmentInstance.IdxInputProvider)
+					shares += shareInputProvider
+					seq = shipmentInstance.Prev
+					if seq == "0" {
+						break
+					}
+					shares += ","
+				}
+			}
+
+			args += shares
+		}
+
+		sourceItem(stub, args)
+
+		return shim.Success([]byte("sourceItemClientLocal finished"))
+
+	} else if fn == "sourceItemServerGlobal" {
+		data := strings.Split(args[0], ",")
+		paraNum := 3
+		if len(data)%paraNum != 0 {
+			shim.Error("Invalid number of arguments")
+		}
+
+		itemNum := len(data) / paraNum
+		for i := 0; i < itemNum; i++ {
+			itemID := data[paraNum * i]
+			seq := data[paraNum * i + 1]
+			listInputProvider := data[paraNum * i + 2]
+
+			key := "sourceItem" + itemID + seq
+			inquiryInstance := getInquiry(stub, key)
+			inquiryInstance.Value = listInputProvider
+			inquiryInstance.State = SETTLE
+			putInquiry(stub, key, inquiryInstance)
+		}
+
+		return shim.Success([]byte("sourceItemServerGlobal finished"))
+
 	}
 
 	return shim.Error("Invalid Smart Contract function name.")
