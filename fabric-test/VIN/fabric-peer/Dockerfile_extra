@@ -1,3 +1,11 @@
 FROM lilione/fabric-peer:pairing
 
-RUN apt-get update && apt-get install -y --no-install-recommends lsof
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    lsof \
+    libgmp3-dev \
+    libprocps4-dev \
+    python-markdown \
+    libboost-all-dev \
+    pkg-config
+
+RUN pip3 install leveldb

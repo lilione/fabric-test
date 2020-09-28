@@ -30,28 +30,8 @@ func (s *scc) Init(stub shim.ChaincodeStubInterface) peer.Response {
 func (s *scc) Invoke(stub shim.ChaincodeStubInterface) peer.Response {
 	fn, args := stub.GetFunctionAndParameters()
 
-	if fn == "dbPut" {
-		key := args[0]
-		value := args[1]
-
-		dbPut(key, value)
-
-		return shim.Success([]byte(""))
-
-	} else if fn == "dbGet" {
-		key := args[0]
-
-		value := dbGet(key)
-
-		return shim.Success(value)
-
-	} else if fn == "calcShare" {
-		idx := args[0]
-		maskedShare := args[1]
-
-		value := calcShare(idx, maskedShare)
-
-		return shim.Success([]byte(value))
+	if fn == "registerItem" {
+		registerItem(args[0])
 
 	} else if fn == "handOffItem" {
 		handOffItem(args[0])

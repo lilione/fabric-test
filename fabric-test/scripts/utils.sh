@@ -361,18 +361,18 @@ invoke() {
   invoke $1 $2 $arg "getInputmaskIdx"
 }
 
-1_registerItemGlobal() {
+1_registerItemClientGlobal() {
   CC_NAME=supplychain_cc_1
-  echo "registerItemGlobal"
-  arg="{\"Args\":[\"registerItemGlobal\",\"$3\"]}"
-  invoke $1 $2 $arg "registerItemGlobal"
+  echo "registerItemClientGlobal"
+  arg="{\"Args\":[\"registerItemClientGlobal\",\"$3\"]}"
+  invoke $1 $2 $arg "registerItemClientGlobal"
 }
 
-1_registerItemLocal() {
+1_registerItemClientLocal() {
   CC_NAME=supplychain_cc_1
-  echo "registerItemLocal"
-  arg="{\"Args\":[\"registerItemLocal\",\"$3\"]}"
-  invoke $1 $2 $arg "registerItemLocal"
+  echo "registerItemClientLocal"
+  arg="{\"Args\":[\"registerItemClientLocal\",\"$3\"]}"
+  invoke $1 $2 $arg "registerItemClientLocal"
 }
 
 1_handOffItemClientGlobal() {

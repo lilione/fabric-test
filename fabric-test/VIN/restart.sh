@@ -7,7 +7,6 @@ docker rm $(docker ps -a | grep "client" | awk '{print $1}') || true
 docker rmi -f $(docker images | grep 'dev' | awk '{print $1}') || true
 
 rm -rfv $GOPATH/src/github.com/lilione/fabric-test/fabric-test/log/chaincode
-rm $GOPATH/src/github.com/lilione/HoneyBadgerMPC/time.log || true
 
 ## build system chaincode
 #echo "building system chaincode"
@@ -25,6 +24,7 @@ rm $GOPATH/src/github.com/lilione/HoneyBadgerMPC/time.log || true
 
 # build fabric peer docker image
 #echo "building fabric-peer docker image"
+#cd $GOPATH/src/github.com/hyperledger/fabric
 #DOCKER_DYNAMIC_LINK=true GO_TAGS+=" pluginsenabled" make peer-docker IN_DOCKER=true
 
 # install and instantiate application chaincode

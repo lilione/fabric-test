@@ -17,27 +17,9 @@ func toChaincodeArgs(args ...string) [][]byte {
 	return bargs
 }
 
-func dbPut(stub shim.ChaincodeStubInterface, key string, value string) {
-	chainCodeArgs := toChaincodeArgs("dbPut", key, value)
+func registerItem(stub shim.ChaincodeStubInterface, args string) {
+	chainCodeArgs := toChaincodeArgs("registerItem", args)
 	stub.InvokeChaincode(sccName, chainCodeArgs, channelName)
-}
-
-func dbGet(stub shim.ChaincodeStubInterface, key string) string {
-	chainCodeArgs := toChaincodeArgs("dbGet", key)
-	res := stub.InvokeChaincode(sccName, chainCodeArgs, channelName)
-	if res.Status == 200 {
-		return string(res.Payload)
-	}
-	return ""
-}
-
-func calcShare(stub shim.ChaincodeStubInterface, idx string, maskedShare string) string {
-	chainCodeArgs := toChaincodeArgs("calcShare", idx, maskedShare)
-	res := stub.InvokeChaincode(sccName, chainCodeArgs, channelName)
-	if res.Status == 200 {
-		return string(res.Payload)
-	}
-	return ""
 }
 
 func handOffItem(stub shim.ChaincodeStubInterface, args string) {

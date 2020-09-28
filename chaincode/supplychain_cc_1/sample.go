@@ -11,10 +11,6 @@ import (
 )
 
 const (
-	//stateStartGlobal = "startGlobal"
-	//stateStartLocal = "startLocal"
-	//stateFinalizeGlobal = "finalizeGlobal"
-	//stateFinalizeLocal = "finalizeLocal"
 	READY = "READY"
 	SETTLE = "SETTLE"
 )
@@ -112,7 +108,7 @@ func (s *SmartContract) Invoke(stub shim.ChaincodeStubInterface) peer.Response {
 
 		return shim.Success([]byte(inputmaskIdx))
 
-	} else if fn == "registerItemGlobal" {
+	} else if fn == "registerItemClientGlobal" {
 		data := strings.Split(args[0], ",")
 		paraNum := 2
 		if len(data) % paraNum != 0 {
@@ -145,7 +141,7 @@ func (s *SmartContract) Invoke(stub shim.ChaincodeStubInterface) peer.Response {
 
 		return shim.Success([]byte(ret))
 
-	} else if fn == "registerItemLocal" {
+	} else if fn == "registerItemClientLocal" {
 		data := strings.Split(args[0], ",")
 		paraNum := 4
 		if len(data) % paraNum != 0 {
@@ -153,6 +149,7 @@ func (s *SmartContract) Invoke(stub shim.ChaincodeStubInterface) peer.Response {
 		}
 
 		itemNum := len(data) / paraNum
+		args := ""
 		for i := 0; i < itemNum; i++ {
 			itemID := data[paraNum*i]
 			seq := data[paraNum*i+1]
@@ -167,13 +164,15 @@ func (s *SmartContract) Invoke(stub shim.ChaincodeStubInterface) peer.Response {
 			idxRegistrant := shipmentInstance.IdxOutputProvider
 			idxAmt := shipmentInstance.IdxAmount
 
-			shareRegistrant := calcShare(stub, idxRegistrant, maskedRegistrant)
-			shareAmt := calcShare(stub, idxAmt, maskedAmt)
-			dbPut(stub, idxRegistrant, shareRegistrant)
-			dbPut(stub, idxAmt, shareAmt)
+			if i > 0 {
+				args += " "
+			}
+			args += fmt.Sprintf("%s %s %s %s", idxRegistrant, maskedRegistrant, idxAmt, maskedAmt)
 		}
 
-		return shim.Success([]byte("registerItemLocal finished"))
+		registerItem(stub, args)
+
+		return shim.Success([]byte("registerItemClientLocal finished"))
 
 	} else if fn == "handOffItemClientGlobal" {
 		data := strings.Split(args[0], ",")
@@ -248,25 +247,20 @@ func (s *SmartContract) Invoke(stub shim.ChaincodeStubInterface) peer.Response {
 			if shipmentInstance.State != READY {
 				return shim.Error("Shipment is not ready")
 			}
+
 			idxInputProvider := shipmentInstance.IdxInputProvider
 			idxOutputProvider := shipmentInstance.IdxOutputProvider
 			idxAmt := shipmentInstance.IdxAmount
-			shareInputProvider := calcShare(stub, idxInputProvider, maskedInputProvider)
-			shareOutputProvider := calcShare(stub, idxOutputProvider, maskedOutputProvider)
-			shareAmt := calcShare(stub, idxAmt, maskedAmt)
-			dbPut(stub, idxInputProvider, shareInputProvider)
-			dbPut(stub, idxOutputProvider, shareOutputProvider)
-			dbPut(stub, idxAmt, shareAmt)
 
 			prevSeq := shipmentInstance.Prev
 			prevShipmentInstance := getShipment(stub, ("itemInfo" + itemID + prevSeq))
-			sharePrevOutputProvider := dbGet(stub, prevShipmentInstance.IdxOutputProvider)
-			sharePrevAmt := dbGet(stub, prevShipmentInstance.IdxAmount)
+			prevIdxOutputProvider := prevShipmentInstance.IdxOutputProvider
+			prevIdxAmt := prevShipmentInstance.IdxAmount
 
 			if i > 0 {
 				args += " "
 			}
-			args += fmt.Sprintf("%s %s %s %s %s %s", itemID, seq, shareInputProvider, sharePrevOutputProvider, shareAmt, sharePrevAmt)
+			args += fmt.Sprintf("%s %s %s %s %s %s %s %s %s %s", itemID, seq, idxInputProvider, maskedInputProvider, idxOutputProvider, maskedOutputProvider, idxAmt, maskedAmt, prevIdxOutputProvider, prevIdxAmt)
 		}
 
 		handOffItem(stub, args)
@@ -327,21 +321,20 @@ func (s *SmartContract) Invoke(stub shim.ChaincodeStubInterface) peer.Response {
 			}
 			args += fmt.Sprintf("%s %s ", itemID, seq)
 
-			shares := ""
+			shareIdxes := ""
 			if seq != "0" {
 				for true {
 					shipmentInstance := getShipment(stub, ("itemInfo" + itemID + seq))
-					shareInputProvider := dbGet(stub, shipmentInstance.IdxInputProvider)
-					shares += shareInputProvider
+					shareIdxes += shipmentInstance.IdxInputProvider
 					seq = shipmentInstance.Prev
 					if seq == "0" {
 						break
 					}
-					shares += ","
+					shareIdxes += ","
 				}
 			}
 
-			args += shares
+			args += shareIdxes
 		}
 
 		sourceItem(stub, args)
